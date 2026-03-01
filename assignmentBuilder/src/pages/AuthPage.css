@@ -1,0 +1,97 @@
+.auth{
+    width: fit-content;
+    height: fit-content;
+
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+
+    color: white;
+    font-family: 'JetBrainsMono';
+}
+
+.auth__naming{
+    font-size: 33px;
+    font-weight: 300;
+}
+
+.auth__form{
+    width: fit-content;
+    height: fit-content;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 19px;
+
+    background-color: #242424;
+
+    padding: 25px 35px;
+
+    border-radius: 18px;
+}
+
+.auth__form label{
+    display: none;
+}
+
+.form__action{
+    font-size: 33px;
+    margin: 0;
+    height: 85px;
+}
+
+.form__input{
+    width: 465px;
+    padding: 14px 24px;
+    box-sizing: border-box;
+    background: none;
+    border: none;
+    outline: none;
+    border-bottom: solid 1px #595959;
+    color: white;
+    font-size: 20px;
+    font-weight: 300;
+}
+
+.form__input:hover, .form__input:active, .form__input:focus{
+    background: none;
+    outline: none;
+    border-bottom: solid 1px #595959;
+}
+
+.form__input::placeholder{
+    font-family: 'JetBrainsMono';
+    opacity: 65%;
+}
+
+.form__switch{
+    font-size: 20px;
+    font-weight: 300;
+}
+
+.form__buttons-container{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.form__buttons-container button{
+    font-family: 'JetBrainsMono';
+    font-size: 20px;
+    font-weight: 300;
+    padding: 14px 30px;
+    border: none;
+    border-radius: 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.form__google-auth img{
+    width: 25px;
+    aspect-ratio: 1;
+}
