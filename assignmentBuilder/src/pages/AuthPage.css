@@ -6,7 +6,7 @@
     flex-direction: column;
     margin: auto;
 
-    color: white;
+    color: black;
     font-family: 'JetBrainsMono';
 }
 
@@ -24,7 +24,7 @@
     align-items: center;
     gap: 19px;
 
-    background-color: #242424;
+    background-color: white;
 
     padding: 25px 35px;
 
@@ -49,7 +49,7 @@
     border: none;
     outline: none;
     border-bottom: solid 1px #595959;
-    color: white;
+    color: Black;
     font-size: 20px;
     font-weight: 300;
 }
@@ -89,6 +89,13 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
+
+    transition: .15s ease;
+}
+
+.form__buttons-container button:hover{
+    background-color: #dfdfdf;
+    scale: 1.02;
 }
 
 .form__google-auth img{

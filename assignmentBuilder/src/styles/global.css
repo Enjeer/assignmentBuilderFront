@@ -1,4 +1,5 @@
 @import '@/pages/AuthPage.css';
+@import '@/pages/ProjectsPage.css';
 @import '@/styles/variables.css';
 @import '@/styles/fonts.css';
 
@@ -14,6 +15,13 @@ body{
     height: 100%;
     padding: 0;
     margin: 0;
+
+    overflow-x: hidden;
+}
+
+h1, h2, p, span, ul, li{
+    margin: 0;
+    padding: 0;
 }
 
 /* styles */
@@ -27,5 +35,203 @@ div#root{
     height: 100%;
 
     display: flex;
-    flex-direction: column;
+    flex-flow: column;
+}
+
+aside{
+    display: none;
+}
+
+.app-container{
+    height: 100%;
+
+    display: flex;
+    flex-flow: column;
+}
+
+.app-header{
+    display: flex;
+    font-family: 'JetBrainsMono';
+}
+
+.app-header nav{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+
+    padding: 20px 35px 20px 15px;
+    box-sizing: border-box;
+
+    background-color: var(--nav-background);
+    border-bottom: var(--nav-border);
+}
+
+.app-header .app-header__navigation{
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.app-header .app-header__navigation a{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 20px;
+    color: black;
+    opacity: .6;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 10px;
+
+    font-size: 15px;
+}
+
+.app-header .app-header__navigation a:hover{
+    opacity: .85;
+}
+
+.app-header .app-header__navigation a.active{
+    opacity: 1;
+    text-decoration: underline;
+}
+
+.app-header .user-info{
+    display: flex;
+    align-items: center;
+    opacity: 1;
+    color: var(--purple);
+}
+
+.app-header button{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 10px;
+    align-items: center;
+
+    padding: 5px 5px;
+    background: none;
+    border: solid 2px var(--error);
+
+    font-family: 'JetBrainsMono';
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--error);
+    border-radius: 10px;
+    transition: all .25s ease;
+    
+    position: relative;
+    overflow: hidden;
+}
+
+.app-header button span{
+    display: inline-block;
+    position: absolute;
+    opacity: 0;
+    transform: translateX(-10px);
+    white-space: nowrap;
+}
+
+.app-header button img{
+    height: 25px;
+}
+
+.app-header button:hover{
+    padding: 5px 15px;
+}
+
+.app-header button:hover span{
+    opacity: 1;
+    transform: translateX(0);
+    position: relative;
+}
+
+.app-header button:active{
+    scale: .95;
+}
+
+main{
+    flex: 1 0 auto;
+}
+
+/* LOGOUT MODAL */
+
+.modal-overlay{
+    position: absolute;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    right: auto;
+
+    width: 100%;
+    height: 100%;
+
+    background-color: rgba(0, 0, 0, .25);
+
+    z-index: 999;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content{
+    background-color: white;
+    padding: 25px;
+    border-radius: 25px;
+
+    display: flex;
+    flex-flow: column;
+    gap: 15px;
+
+    font-family: "JetBrainsMono";
+}
+
+.modal-content span{
+    font-size: 25px;
+    font-weight: 500;
+}
+
+.modal-actions{
+    width: 100%;
+    display: flex;
+    gap: 12px;
+}
+
+.modal-actions button{
+    padding: 12px 24px;
+    font-family: "JetBrainsMono", monospace;
+    font-weight: 500;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    transition: all 0.15s ease;
+    font-size: 14px;
+}
+
+.modal-actions button:nth-of-type(1){
+    background-color: #ffebee;
+    color: #c62828;
+}
+
+.modal-actions button:nth-of-type(1):hover{
+    background-color: var(--error, #f44336);
+    color: white;
+}
+
+.modal-actions button:nth-of-type(2){
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+.modal-actions button:nth-of-type(2):hover{
+    background-color: var(--purple);
+    color: white;
 }

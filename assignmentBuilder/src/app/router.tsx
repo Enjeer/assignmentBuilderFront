@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import EditorPage from "@/pages/EditorPage";
 import AuthPage from "@/pages/AuthPage";
 import DashboardPage from "@/pages/DashboardPage";
+import ProjectsPage from "@/pages/ProjectsPage";
 import MainLayout from "@/layouts/MainLayout";
 import ProtectedRoute from "@/app/protectedRoute";
 import { onAuthStateChanged } from "firebase/auth";
@@ -34,7 +35,7 @@ const AppRouter = () => {
     }, [dispatch]);
 
 
-    return (
+    return (    
         <BrowserRouter>
         <Routes>
             <Route path="/auth" element={<AuthPage />} />
@@ -48,6 +49,7 @@ const AppRouter = () => {
             }
             >
             <Route index element={<DashboardPage />} />
+            <Route path="editor/" element={<ProjectsPage />} />
             <Route path="editor/:documentId" element={<EditorPage />} />
             </Route>
 

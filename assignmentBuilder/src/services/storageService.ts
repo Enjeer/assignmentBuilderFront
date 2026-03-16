@@ -22,11 +22,18 @@ class StorageService{
 
     static removeItem(key: string){
         try{
-            console.log(key);
             localStorage.removeItem(key);
             return null;
         } catch(error: any) {
             console.log('Error removing data', error);
+        }
+    }
+
+    static addDocs(key: string, data: {}){
+        try{
+            localStorage.setItem(key, JSON.stringify(data));
+        } catch(error: any) {
+            console.l
         }
     }
 }
