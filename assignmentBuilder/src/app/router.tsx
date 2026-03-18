@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import EditorPage from "@/pages/EditorPage";
+import EditorPage from "@/pages/EditorPage/EditorPage";
 import AuthPage from "@/pages/AuthPage";
 import DashboardPage from "@/pages/DashboardPage";
 import ProjectsPage from "@/pages/ProjectsPage";

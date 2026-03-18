@@ -1,0 +1,137 @@
+
+
+.editor-page__container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.editor__credentials{
+    display: flex;
+    justify-content: space-between;
+    height: fit-content;
+    padding: 10px 25px;
+    font-family: "JetBrainsMono";
+}
+
+.document__name-container{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.document__name, .change-input{
+    font-size: 22px;
+    font-weight: 500;
+    width: 600px;
+    font-family: "JetBrainsMono";
+}
+
+.name__edit{
+    height: 30px;
+    width: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+    border-radius: 8px;
+    border: none;
+    box-sizing: border-box;
+    padding-left: 1px;
+    padding-bottom: 1px;
+}
+
+.name__edit img{
+    height: 14px;
+    filter: brightness(0) saturate(100%) invert(50%) sepia(99%) saturate(2552%) hue-rotate(236deg) brightness(91%) contrast(91%);
+}
+
+.name__edit:hover{
+    background-color: var(--purple);
+}
+
+.name__edit:hover img{
+    filter: brightness(0) saturate(100%) invert(100%) sepia(0%) saturate(2%) hue-rotate(63deg) brightness(112%) contrast(101%);
+}
+
+.change-input{
+    border: none;
+    outline: none;
+    background: none;
+}
+
+.hidden{
+    display: none;
+}
+
+.visible{
+    display: flex;
+}
+
+.document__interaction {
+    height: 50px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap; /* На случай узкого экрана */
+}
+
+.document__interaction button{
+    font-size: 14px;
+    width: 40px;
+    aspect-ratio: 1/1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.document__interaction button img{
+    height: 15px;
+}
+
+.interaction__button-save {
+    background-color: #d0dff0;
+}
+
+.interaction__button-save img{
+    filter: brightness(0) saturate(100%) invert(66%) sepia(44%) saturate(6730%) hue-rotate(192deg) brightness(88%) contrast(84%);
+}
+
+.interaction__button-save:hover {
+    background-color: var(--blue);
+}
+
+.interaction__button-save:hover img{
+    filter: brightness(0) saturate(100%) invert(96%) sepia(97%) saturate(12%) hue-rotate(237deg) brightness(103%) contrast(103%);
+}
+
+.editor__container {
+    display: flex;
+    flex-direction: row;
+    gap: 25px;
+    flex-grow: 1;
+    min-height: 0;
+    overflow: hidden;
+    padding: 25px;
+    box-sizing: border-box;
+}
+
+.editor__builder {
+    width: 600px;
+    height: 100%;
+    overflow-y: auto;
+    background-color: white; /* Светлый фон вместо rebeccapurple */
+    border-radius: 12px;
+    margin: 0;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    font-family: "JetBrainsMono", monospace;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.editor__viewport {
+    flex-grow: 1;
+    height: 100%;
+    overflow-y: auto;
+}

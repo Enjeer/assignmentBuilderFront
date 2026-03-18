@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
-import { apiClient, Project } from "@/services/apiClient"
+import { apiClient } from "@/services/apiClient"
+import { Project } from "@/shared/types/common"
 import editIcon from "@/assets/images/edit-icon.svg"
 import openIcon from "@/assets/images/open-icon.svg"
 import deleteIcon from "@/assets/images/delete-icon.svg"
