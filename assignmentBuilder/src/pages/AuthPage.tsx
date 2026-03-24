@@ -1,15 +1,17 @@
 // pages/AuthPage.tsx
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { signIn, signUp, googleAuth } from "@/features/auth/authSlice";
+import type { AppDispatch } from "@/app/store";
+import { signUp, logIn } from "@/features/auth/authSlice";
 import { RootState } from "@/app/store";
 import { useNavigate } from "react-router-dom";
 import googleIcon from '@/assets/images/google.svg';
 
 export default function AuthPage() {
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const { status, error, user } = useSelector((state: RootState) => state.auth);
 
+    const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -28,20 +30,27 @@ export default function AuthPage() {
         e.preventDefault();
 
         if (isSignUp) {
-        // Проверяем совпадение паролей
-        if (password !== confirmPassword) {
+            if (password !== confirmPassword) {
             setPasswordMismatch(true);
             return;
-        }
-        setPasswordMismatch(false);
-        dispatch(signUp({ email, password }));
+            }
+
+            setPasswordMismatch(false);
+
+            dispatch(
+                signUp({
+                    user_name: username,
+                    email,
+                    password
+                })
+            );
         } else {
-        dispatch(signIn({ email, password }));
+            dispatch(logIn({ login: email, password }));
         }
-    };
+        };
 
     const handleSignWithGoogle = () => {
-        dispatch(googleAuth());
+        // dispatch(googleAuth());
     };
 
     return (
@@ -55,15 +64,30 @@ export default function AuthPage() {
         <form className="auth__form" onSubmit={handleSubmit}>
             <p className="form__action">{isSignUp ? "Sign Up" : "Sign In"}</p>
 
+            {isSignUp && (
+                <div className="form__field">
+                <label htmlFor="username">Username</label>
+                <input
+                    className="form__input"
+                    id="username"
+                    type="name"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Username"
+                    required
+                />
+                </div>
+            )}
+
             <div className="form__field">
             <label htmlFor="email">Email</label>
             <input
                 className="form__input"
                 id="email"
-                type="email"
+                type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
+                placeholder={`Email ${isSignUp? '': 'or username'}`}
                 required
             />
             </div>

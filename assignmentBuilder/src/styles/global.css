@@ -98,6 +98,12 @@ aside{
     text-decoration: underline;
 }
 
+.app-header .login-data__container{
+    display: flex;
+    flex-flow: row;
+    gap: 15px;
+}
+
 .app-header .user-info{
     display: flex;
     align-items: center;

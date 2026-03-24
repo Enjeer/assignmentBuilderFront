@@ -1,15 +1,16 @@
 import type {AppDispatch, RootState} from "@/app/store"
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
 import { useDispatch } from "react-redux"
-import { auth, googleProvider} from '@/firebaseConfig';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import StorageService from "@/services/storageService";
-import { onAuthStateChanged, signOut } from "firebase/auth";
 
+
+const authApi: string = 'http://192.168.10.234:8000/api/';
+const logInRoute: string = 'login/';
+const signUpRoute: string = 'register/';
 
 export interface authState {
     user: { 
-        uid: string,
+        id: string,
         email: string 
     } | null
     status: 'idle' | 'loading' | 'succeeded' | 'failed';
@@ -17,64 +18,84 @@ export interface authState {
     isAuthChecked: boolean
 }
 
+interface SignUpPostData {
+    user_name: string,
+    password: string,
+    email: string,
+}
+
+interface LogInPostData {
+    login: string,
+    password: string,
+}
+
 const initialState: authState = {
-    user: StorageService.getItem<{ uid: string; email: string }>('user') || null,
+    user: StorageService.getItem<{ id: string; email: string }>('user') || null,
     status: 'idle',
     error: null,
     isAuthChecked: false,
 };
 
-export const signUp = createAsyncThunk(
-    'auth/signUp',
-    async ({email, password}: {email: string; password: string}, {rejectWithValue}) =>{
-        try{
-            const credentials = await createUserWithEmailAndPassword(auth, email, password);
-            return {uid: credentials.user.uid, email: credentials.user.email};
-        } catch(error: any) {
-            return rejectWithValue(error.message);
-        }
-    }
-)
+async function authenticationPost<T>(url: string, data: T): Promise<any> {
+    const res = await fetch(url, {
+        method: "POST",
+        headers: { 
+            'Content-Type': 'application/json;charset=utf-8' 
+        },
+        body: JSON.stringify(data)
+    });
 
-export const signIn = createAsyncThunk(
-    'auth/signIn',
-    async ({email, password}: {email: string; password: string}, {rejectWithValue}) =>{
-        try{
-            const credentials = await signInWithEmailAndPassword(auth, email, password);
-            return {uid: credentials.user.uid, email: credentials.user.email};
-        } catch(error: any) {
-            return rejectWithValue(error.message);
-        }
+    if (!res.ok) {
+        throw new Error(`Error: ${res.status}`);
     }
-)
 
-export const googleAuth = createAsyncThunk(
-    'auth/googleAuth',
-    async (_, { rejectWithValue }) => {
+    return res.json();
+}
+
+export const logIn = createAsyncThunk(
+    'auth/logIn',
+    async ({login, password}: {login: string; password: string}, {rejectWithValue}) => {
+        const url = authApi + logInRoute;
+        const data: LogInPostData = {login, password};
         try {
-            const credentials = await signInWithPopup(auth, googleProvider);
-            const user = { uid: credentials.user.uid, email: credentials.user.email! };
-            StorageService.setItem('user', user);
-            return user;
+            const credentials = await authenticationPost(url, data);
+            return {
+                id: credentials.user_name,
+                email: credentials.email,
+                username: credentials.user_name
+            };
         } catch (error: any) {
             return rejectWithValue(error.message);
         }
     }
 );
+
+export const signUp = createAsyncThunk(
+    'auth/signUp',
+    async ({user_name, email, password}: {user_name: string; email: string; password: string}, {rejectWithValue}) =>{
+        const url = authApi+signUpRoute;
+        const data: SignUpPostData = {user_name, password, email}
+        try{
+            const credentials = await authenticationPost(url, data);
+            return {id: credentials.user_name, email: credentials.email};
+        } catch(error: any) {
+            return rejectWithValue(error.message);
+        }
+    }
+)
 
 export const logout = createAsyncThunk(
     "auth/logout",
-    async (_, { rejectWithValue }) => {
+    async (_, { rejectWithValue}) => {
         try {
-        await signOut(auth);          // 🔹 разлогиниваем в Firebase
-        StorageService.removeItem("user");
-        return null;
+            StorageService.removeItem("user");
+            console.log('After removeItem:', localStorage.getItem('user')); // должно быть null
+            return null;
         } catch (error: any) {
-        return rejectWithValue(error.message);
+            return rejectWithValue(error.message);
         }
     }
 );
-
 
 export const authSlice = createSlice({
     name: 'auth',
@@ -95,29 +116,23 @@ export const authSlice = createSlice({
         builder
             .addCase(signUp.pending, state => { state.status = 'loading'; state.error = null; })
             .addCase(signUp.fulfilled, (state, action) => {
+                console.log('Saving to localStorage:', action.payload);
                 state.status = 'succeeded';
-                state.user = action.payload;
-                StorageService.setItem('user', action.payload);
+                state.user = {
+                    id: action.payload.id,
+                    email: action.payload.email
+                };
+                StorageService.setItem('user', state.user);
             })
-            .addCase(signUp.rejected, (state, action) => { state.status = 'failed'; state.error = action.payload as string; })
-            .addCase(signIn.pending, state => { state.status = 'loading'; state.error = null; })
-            .addCase(signIn.fulfilled, (state, action) => { 
-                state.status = 'succeeded'; 
-                state.user = action.payload;
-                StorageService.setItem('user', action.payload); 
-            })
-            .addCase(signIn.rejected, (state, action) => { state.status = 'failed'; state.error = action.payload as string; })
-            .addCase(googleAuth.pending, state => {
-                state.status = 'loading';
-                state.error = null;
-            })
-            .addCase(googleAuth.fulfilled, (state, action) => {
+            .addCase(logIn.pending, state => { state.status = 'loading'; state.error = null; })
+            .addCase(logIn.fulfilled, (state, action) => {
+                console.log('Saving to localStorage:', action.payload);
                 state.status = 'succeeded';
-                state.user = action.payload;
-            })
-            .addCase(googleAuth.rejected, (state, action) => {
-                state.status = 'failed';
-                state.error = action.payload as string;
+                state.user = {
+                    id: action.payload.id, // id нет, можно взять user_name как ключ
+                    email: action.payload.email
+                };
+                StorageService.setItem('user', state.user);
             })
             .addCase(logout.fulfilled, (state) => {
                 state.user = null;

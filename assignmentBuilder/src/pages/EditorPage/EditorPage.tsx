@@ -12,10 +12,42 @@ export default function EditorPage() {
     const [project, setProject] = useState<Project | null>(null);
     const [isNameEditing, setIsNameEditing] = useState(false);
     const nameInputRef = useRef<HTMLInputElement>(null);
+    const [openBlocks, setOpenBlocks] = useState<Set<string>>(new Set());
+
 
     useEffect(() => {
         setProject(mockProject);
     }, []);
+
+
+    useEffect(() => {
+        if (project) {
+            const initialOpen = new Set<string>();
+            
+            project.data.blocks.forEach(block => {
+                if (block.type === "chapter" || block.type === "subChapter") {
+                    initialOpen.add(block.id);
+                }
+            });
+            
+            setOpenBlocks(initialOpen);
+            
+        }
+    }, []);
+
+
+    const toggleBlock = (blockId: string) => {
+        setOpenBlocks(prev => {
+            const newSet = new Set(prev);
+
+            newSet.has(blockId)
+                ? newSet.delete(blockId)
+                : newSet.add(blockId);
+
+            return newSet;
+        });
+    };
+
 
     const toggleNameEdit = () => {
         setIsNameEditing(prev => !prev);
@@ -24,14 +56,17 @@ export default function EditorPage() {
         }, 0);
     };
 
+
     const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!project) return;
         setProject({ ...project, name: e.target.value });
     };
 
+
     const handlekeyDown = (e: React.KeyboardEvent) => {
         if (e.key === "Enter") toggleNameEdit();
     };
+
 
     const onDragEnd = (result: any) => {
         if (!result.destination || !project) return;
@@ -48,99 +83,199 @@ export default function EditorPage() {
         setProject({ ...project, data: { ...project.data, blocks: updated } });
     };
 
-    const handleBlockContentChange = (blockId: string, field: string, value: string) => {
+
+    const handleBlockContentChange = (
+        blockId: string,
+        field: string,
+        value: string
+    ) => {
         if (!project) return;
-        const newBlocks = project.data.blocks.map(b => {
-        if (b.id === blockId) {
-            return { ...b, content: { ...b.content, [field]: value } };
-        }
-        return b;
+
+        const updateBlocks = (blocks: Block[]): Block[] => {
+            return blocks.map(block => {
+
+                if (block.id === blockId) {
+
+                    if ("content" in block) {
+                        return {
+                            ...block,
+                            content: {
+                                ...block.content,
+                                [field as keyof typeof block.content]: value
+                            }
+                        };
+                    }
+
+                    if ("name" in block) {
+                        return {
+                            ...block,
+                            name: value
+                        };
+                    }
+                }
+
+                if ("children" in block) {
+                    return {
+                        ...block,
+                        children: updateBlocks(block.children)
+                    };
+                }
+
+                return block;
+            });
+        };
+
+        const newBlocks = updateBlocks(project.data.blocks);
+
+        setProject({
+            ...project,
+            data: {
+                ...project.data,
+                blocks: newBlocks
+            }
         });
-        setProject({ ...project, data: { ...project.data, blocks: newBlocks } });
     };
+
 
     const renderBlock = (block: Block) => {
         switch (block.type) {
         case "titlePage":
             return (
-            <div key={block.id} className="block block-titlePage">
+            <div key={block.id} className={`block block-titlePage ${openBlocks.has(block.id) ? '' : 'closed'}`}>
+                <div className="block-field">
+                <label htmlFor={`title-${block.id}`}>Название работы
+                    <button className="hide-button" onClick={()=>{toggleBlock(block.id)}}>
+                        
+                    </button>
+                </label>
                 <input
-                type="text"
-                value={block.content.title}
-                onChange={(e) => handleBlockContentChange(block.id, "title", e.target.value)}
-                className="block-input title-input"
+                    id={`title-${block.id}`}
+                    type="text"
+                    value={block.content.title}
+                    onChange={(e) => handleBlockContentChange(block.id, "title", e.target.value)}
+                    className="block-input title-input"
                 />
+                </div>
+                
+                <div className="block-field">
+                <label htmlFor={`university-${block.id}`}>Университет</label>
                 <input
-                type="text"
-                value={block.content.university}
-                onChange={(e) => handleBlockContentChange(block.id, "university", e.target.value)}
-                className="block-input"
+                    id={`university-${block.id}`}
+                    type="text"
+                    value={block.content.university}
+                    onChange={(e) => handleBlockContentChange(block.id, "university", e.target.value)}
+                    className="block-input"
                 />
+                </div>
+                
                 {block.content.faculty && (
-                <input
+                <div className="block-field">
+                    <label htmlFor={`faculty-${block.id}`}>Факультет</label>
+                    <input
+                    id={`faculty-${block.id}`}
                     type="text"
                     value={block.content.faculty}
                     onChange={(e) => handleBlockContentChange(block.id, "faculty", e.target.value)}
                     className="block-input"
-                />
+                    />
+                </div>
                 )}
+                
                 {block.content.department && (
-                <input
+                <div className="block-field">
+                    <label htmlFor={`department-${block.id}`}>Кафедра</label>
+                    <input
+                    id={`department-${block.id}`}
                     type="text"
                     value={block.content.department}
                     onChange={(e) => handleBlockContentChange(block.id, "department", e.target.value)}
                     className="block-input"
-                />
+                    />
+                </div>
                 )}
+                
+                <div className="block-field">
+                <label htmlFor={`student-${block.id}`}>Студент и группа</label>
                 <input
-                type="text"
-                value={`${block.content.studentName} ${block.content.group}`}
-                onChange={(e) => handleBlockContentChange(block.id, "studentName", e.target.value)}
-                className="block-input"
+                    id={`student-${block.id}`}
+                    type="text"
+                    value={`${block.content.studentName} ${block.content.group}`}
+                    onChange={(e) => handleBlockContentChange(block.id, "studentName", e.target.value)}
+                    className="block-input"
                 />
+                </div>
+                
                 {block.content.teacherName && (
-                <input
+                <div className="block-field">
+                    <label htmlFor={`teacher-${block.id}`}>Преподаватель</label>
+                    <input
+                    id={`teacher-${block.id}`}
                     type="text"
                     value={block.content.teacherName}
                     onChange={(e) => handleBlockContentChange(block.id, "teacherName", e.target.value)}
                     className="block-input"
-                />
+                    />
+                </div>
                 )}
+                
+                <div className="block-field">
+                <label htmlFor={`location-${block.id}`}>Город и год</label>
                 <input
-                type="text"
-                value={`${block.content.city}, ${block.content.year}`}
-                onChange={(e) => handleBlockContentChange(block.id, "city", e.target.value)}
-                className="block-input"
+                    id={`location-${block.id}`}
+                    type="text"
+                    value={`${block.content.city}, ${block.content.year}`}
+                    onChange={(e) => handleBlockContentChange(block.id, "city", e.target.value)}
+                    className="block-input"
                 />
+                </div>
             </div>
             );
 
         case "text":
             return (
-            <textarea
-                key={block.id}
-                value={block.content.text}
-                onChange={(e) => handleBlockContentChange(block.id, "text", e.target.value)}
-                className="block-textarea"
-            />
+            <div key={block.id} className="block block-text">
+                <div className="block-field">
+                <label htmlFor={`text-${block.id}`}>Текст</label>
+                <textarea
+                    id={`text-${block.id}`}
+                    value={block.content.text}
+                    onChange={(e) => handleBlockContentChange(block.id, "text", e.target.value)}
+                    className="block-textarea"
+                />
+                </div>
+            </div>
             );
 
         case "image":
             return (
             <div key={block.id} className="block block-image">
+                <div className="block-field">
+                <label htmlFor={`imageUrl-${block.id}`}>URL изображения</label>
                 <input
-                type="text"
-                value={block.content.imageUrl}
-                onChange={(e) => handleBlockContentChange(block.id, "imageUrl", e.target.value)}
-                className="block-input"
+                    id={`imageUrl-${block.id}`}
+                    type="text"
+                    value={block.content.imageUrl}
+                    onChange={(e) => handleBlockContentChange(block.id, "imageUrl", e.target.value)}
+                    className="block-input"
                 />
+                </div>
+                
+                <div className="block-field">
+                <label htmlFor={`caption-${block.id}`}>Подпись к изображению</label>
                 <input
-                type="text"
-                value={block.content.caption || ""}
-                onChange={(e) => handleBlockContentChange(block.id, "caption", e.target.value)}
-                className="block-input"
+                    id={`caption-${block.id}`}
+                    type="text"
+                    value={block.content.caption || ""}
+                    onChange={(e) => handleBlockContentChange(block.id, "caption", e.target.value)}
+                    className="block-input"
                 />
-                {block.content.imageUrl && <img src={block.content.imageUrl} alt={block.content.caption || ""} />}
+                </div>
+                
+                {block.content.imageUrl && (
+                <div className="block-image-preview">
+                    <img src={block.content.imageUrl} alt={block.content.caption || ""} />
+                </div>
+                )}
             </div>
             );
 
@@ -148,15 +283,27 @@ export default function EditorPage() {
         case "subChapter":
             return (
             <div key={block.id} className={`block block-${block.type}`}>
+                <div className="block-field">
+                <label htmlFor={`name-${block.id}`}>
+                    {block.type === "chapter" ? block.name : "Название подглавы"}
+                    <button className="hide-button" onClick={()=>{toggleBlock(block.id)}}>
+                        
+                    </button>
+                </label>
                 <input
-                type="text"
-                value={block.name}
-                onChange={(e) => handleBlockContentChange(block.id, "name", e.target.value)}
-                className="block-input chapter-input"
+                    id={`name-${block.id}`}
+                    type="text"
+                    value={block.name}
+                    onChange={(e) => handleBlockContentChange(block.id, "name", e.target.value)}
+                    className="block-input chapter-input"
                 />
-                <div className="block-children">
-                {block.children.map((child) => renderBlock(child))}
                 </div>
+                
+                {openBlocks.has(block.id) && (
+                                <div className="block-children">
+                                    {block.children.map((child) => renderBlock(child))}
+                                </div>
+                            )}
             </div>
             );
 

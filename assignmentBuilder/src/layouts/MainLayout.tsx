@@ -63,20 +63,21 @@ export default function MainLayout() {
                         >
                             New Project
                         </Link>
-                        
-                        {/* Информация о пользователе */}
-                        {user && (
-                            <div className="user-info">
-                                <span className="user-email">{user.email}</span>
-                            </div>
-                        )}
                     </div>
                 
                     
+                    <div className="login-data__container">
                     <button onClick={openLogoutModal} className="logout-btn">
                         <img src={exitIcon} alt="Exit icon" /> 
                         <span>SignOut</span>
                     </button>
+                    {/* Информация о пользователе */}
+                    {user && (
+                        <div className="user-info">
+                            <span className="user-email">{user.id}</span>
+                        </div>
+                    )}
+                    </div>
                 </nav>
             </header>
 

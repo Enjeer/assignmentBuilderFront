@@ -12,6 +12,7 @@ export type Project = {
 }
 
 export type Block =
+    | TitlePageBlock
     | ChapterBlock
     | SubChapterBlock
     | TextBlock

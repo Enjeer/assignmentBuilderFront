@@ -10,10 +10,10 @@ class StorageService{
         }
     }
 
-    static getItem(key: string){
-        try{
+    static getItem<T = any>(key: string): T | null {
+        try {
             const item = localStorage.getItem(key);
-            return item ? JSON.parse(item) : null;
+            return item ? JSON.parse(item) as T : null;
         } catch(error: any) {
             console.log('Error getting user data', error);
             return null;
@@ -33,7 +33,7 @@ class StorageService{
         try{
             localStorage.setItem(key, JSON.stringify(data));
         } catch(error: any) {
-            console.l
+            console.log(error)
         }
     }
 }
