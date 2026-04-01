@@ -1,28 +1,67 @@
 import { type Block } from "@/lib/projects-context";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useMemo } from "react";
 
 interface DocumentPreviewProps {
   blocks: Block[];
   projectName: string;
 }
 
+/** Split blocks into pages: each H1 heading forces a new page */
+function splitIntoPages(blocks: Block[]): Block[][] {
+  if (blocks.length === 0) return [[]];
+
+  const pages: Block[][] = [];
+  let current: Block[] = [];
+
+  for (const block of blocks) {
+    const isH1 = block.type === "heading" && (block.content.level || 1) === 1;
+    const isTitle = block.type === "title-page";
+
+    if ((isH1 || isTitle) && current.length > 0) {
+      pages.push(current);
+      current = [];
+    }
+    current.push(block);
+  }
+
+  if (current.length > 0) pages.push(current);
+  return pages;
+}
+
 export default function DocumentPreview({ blocks, projectName }: DocumentPreviewProps) {
+  const pages = useMemo(() => splitIntoPages(blocks), [blocks]);
+
   return (
     <div className="h-full flex flex-col bg-muted/30">
       <div className="px-4 py-2 border-b border-border bg-card shrink-0">
         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Предпросмотр</span>
       </div>
       <ScrollArea className="flex-1">
-        <div className="p-6 flex justify-center">
-          <div className="bg-white text-black shadow-lg w-full max-w-[210mm] min-h-[297mm] px-[25mm] py-[20mm] text-[12pt] leading-[1.5] font-serif"
-            style={{ fontFamily: "'Times New Roman', 'Liberation Serif', serif" }}>
-            {blocks.length === 0 && (
+        <div className="p-6 flex flex-col items-center gap-8">
+          {blocks.length === 0 ? (
+            <div
+              className="bg-white text-black shadow-lg w-full max-w-[210mm] min-h-[297mm] px-[25mm] py-[20mm] text-[12pt] leading-[1.5]"
+              style={{ fontFamily: "'Times New Roman', 'Liberation Serif', serif" }}
+            >
               <p className="text-gray-400 italic text-center mt-20">Документ пуст</p>
-            )}
-            {blocks.map(block => (
-              <PreviewBlock key={block.id} block={block} />
-            ))}
-          </div>
+            </div>
+          ) : (
+            pages.map((pageBlocks, pageIdx) => (
+              <div
+                key={pageIdx}
+                className="bg-white text-black shadow-lg w-full max-w-[210mm] min-h-[297mm] px-[25mm] py-[20mm] text-[12pt] leading-[1.5] relative"
+                style={{ fontFamily: "'Times New Roman', 'Liberation Serif', serif" }}
+              >
+                {pageBlocks.map(block => (
+                  <PreviewBlock key={block.id} block={block} />
+                ))}
+                <span className="absolute bottom-[10mm] left-0 right-0 text-center text-[10pt] text-gray-400">
+                  {pageIdx + 1}
+                </span>
+              </div>
+            ))
+          )}
         </div>
       </ScrollArea>
     </div>
@@ -57,7 +96,7 @@ function PreviewBlock({ block }: { block: Block }) {
       const level = block.content.level || 1;
       const Tag = `h${level}` as keyof JSX.IntrinsicElements;
       const sizes: Record<number, string> = {
-        1: "text-[16pt] font-bold mt-6 mb-3",
+        1: "text-[16pt] font-bold mt-2 mb-3",
         2: "text-[14pt] font-bold mt-5 mb-2",
         3: "text-[13pt] font-semibold mt-4 mb-2",
       };
