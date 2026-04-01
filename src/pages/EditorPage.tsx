@@ -12,6 +12,8 @@ import {
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
+import DocumentPreview from "@/components/DocumentPreview";
 
 const BLOCK_TYPES = [
   { type: "heading", label: "Заголовок", icon: Heading },
@@ -118,75 +120,73 @@ export default function EditorPage() {
         </Button>
       </header>
 
-      {/* Editor area */}
-      <div className="flex-1 overflow-y-auto bg-background">
-        <div className="max-w-3xl mx-auto py-8 px-4 space-y-3">
-          {blocks.length === 0 && (
-            <div className="text-center py-20 text-muted-foreground">
-              <FileText className="w-12 h-12 mx-auto mb-4 opacity-30" />
-              <p className="text-lg font-medium">Документ пуст</p>
-              <p className="text-sm mb-4">Добавьте первый блок, чтобы начать</p>
-            </div>
-          )}
-
-          {blocks.map((block, idx) => (
-            <Card key={block.id} className="group border-border hover:border-primary/20 transition-colors animate-fade-in">
-              <CardContent className="p-0">
-                {/* Block header */}
-                <div className="flex items-center gap-1 px-3 py-2 border-b border-border bg-muted/30">
-                  <GripVertical className="w-3.5 h-3.5 text-muted-foreground/50" />
-                  <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider flex-1">
-                    {BLOCK_TYPES.find(bt => bt.type === block.type)?.label || block.type}
-                  </span>
-                  <button onClick={() => moveBlock(idx, -1)} disabled={idx === 0}
-                    className="p-1 text-muted-foreground hover:text-foreground disabled:opacity-20 transition-colors">
-                    <ChevronUp className="w-3.5 h-3.5" />
-                  </button>
-                  <button onClick={() => moveBlock(idx, 1)} disabled={idx === blocks.length - 1}
-                    className="p-1 text-muted-foreground hover:text-foreground disabled:opacity-20 transition-colors">
-                    <ChevronDown className="w-3.5 h-3.5" />
-                  </button>
-                  <button onClick={() => removeBlock(block.id)}
-                    className="p-1 text-muted-foreground hover:text-destructive transition-colors">
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+      {/* Editor + Preview */}
+      <ResizablePanelGroup direction="horizontal" className="flex-1">
+        <ResizablePanel defaultSize={50} minSize={30}>
+          <div className="h-full overflow-y-auto bg-background">
+            <div className="max-w-3xl mx-auto py-8 px-4 space-y-3">
+              {blocks.length === 0 && (
+                <div className="text-center py-20 text-muted-foreground">
+                  <FileText className="w-12 h-12 mx-auto mb-4 opacity-30" />
+                  <p className="text-lg font-medium">Документ пуст</p>
+                  <p className="text-sm mb-4">Добавьте первый блок, чтобы начать</p>
                 </div>
+              )}
 
-                {/* Block content */}
-                <div className="p-4">
-                  <BlockEditor block={block} onChange={content => updateBlock(block.id, content)} />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+              {blocks.map((block, idx) => (
+                <Card key={block.id} className="group border-border hover:border-primary/20 transition-colors animate-fade-in">
+                  <CardContent className="p-0">
+                    <div className="flex items-center gap-1 px-3 py-2 border-b border-border bg-muted/30">
+                      <GripVertical className="w-3.5 h-3.5 text-muted-foreground/50" />
+                      <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider flex-1">
+                        {BLOCK_TYPES.find(bt => bt.type === block.type)?.label || block.type}
+                      </span>
+                      <button onClick={() => moveBlock(idx, -1)} disabled={idx === 0}
+                        className="p-1 text-muted-foreground hover:text-foreground disabled:opacity-20 transition-colors">
+                        <ChevronUp className="w-3.5 h-3.5" />
+                      </button>
+                      <button onClick={() => moveBlock(idx, 1)} disabled={idx === blocks.length - 1}
+                        className="p-1 text-muted-foreground hover:text-foreground disabled:opacity-20 transition-colors">
+                        <ChevronDown className="w-3.5 h-3.5" />
+                      </button>
+                      <button onClick={() => removeBlock(block.id)}
+                        className="p-1 text-muted-foreground hover:text-destructive transition-colors">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                    <div className="p-4">
+                      <BlockEditor block={block} onChange={content => updateBlock(block.id, content)} />
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
 
-          {/* Add block */}
-          <div className="relative flex justify-center pt-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setAddMenuOpen(!addMenuOpen)}
-              className="gap-2 text-muted-foreground"
-            >
-              <Plus className="w-4 h-4" /> Добавить блок
-            </Button>
-            {addMenuOpen && (
-              <div className="absolute top-full mt-2 bg-card border border-border rounded-lg shadow-lg p-2 z-10 flex gap-1 animate-fade-in">
-                {BLOCK_TYPES.map(bt => (
-                  <button
-                    key={bt.type}
-                    onClick={() => addBlock(bt.type as Block["type"])}
-                    className="flex flex-col items-center gap-1 px-3 py-2 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors text-xs"
-                  >
-                    <bt.icon className="w-4 h-4" />
-                    {bt.label}
-                  </button>
-                ))}
+              <div className="relative flex justify-center pt-2">
+                <Button variant="outline" size="sm" onClick={() => setAddMenuOpen(!addMenuOpen)} className="gap-2 text-muted-foreground">
+                  <Plus className="w-4 h-4" /> Добавить блок
+                </Button>
+                {addMenuOpen && (
+                  <div className="absolute top-full mt-2 bg-card border border-border rounded-lg shadow-lg p-2 z-10 flex gap-1 animate-fade-in">
+                    {BLOCK_TYPES.map(bt => (
+                      <button key={bt.type} onClick={() => addBlock(bt.type as Block["type"])}
+                        className="flex flex-col items-center gap-1 px-3 py-2 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors text-xs">
+                        <bt.icon className="w-4 h-4" />
+                        {bt.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
-        </div>
-      </div>
+        </ResizablePanel>
+
+        <ResizableHandle withHandle />
+
+        <ResizablePanel defaultSize={50} minSize={25}>
+          <DocumentPreview blocks={blocks} projectName={projectName} />
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
   );
 }
