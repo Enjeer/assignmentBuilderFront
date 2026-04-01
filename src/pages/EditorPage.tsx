@@ -12,6 +12,8 @@ import {
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
+import DocumentPreview from "@/components/DocumentPreview";
 
 const BLOCK_TYPES = [
   { type: "heading", label: "Заголовок", icon: Heading },
