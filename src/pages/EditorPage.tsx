@@ -7,18 +7,34 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   ArrowLeft, Plus, Trash2, GripVertical, Type, Heading, Image, Table, FileText, Save,
-  ChevronUp, ChevronDown
+  ChevronUp, ChevronDown, Lock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 import DocumentPreview from "@/components/DocumentPreview";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 const BLOCK_TYPES = [
   { type: "heading", label: "Заголовок", icon: Heading },
   { type: "text", label: "Текст", icon: Type },
-  { type: "title-page", label: "Титульный лист", icon: FileText },
   { type: "image", label: "Изображение", icon: Image },
   { type: "table", label: "Таблица", icon: Table },
 ] as const;
@@ -41,9 +57,21 @@ export default function EditorPage() {
   const navigate = useNavigate();
   const project = getProject(projectId || "");
 
-  const [blocks, setBlocks] = useState<Block[]>(project?.blocks || []);
+  const [blocks, setBlocks] = useState<Block[]>(() => {
+    const existing = project?.blocks || [];
+    // Ensure title page exists and is first
+    if (!existing.find(b => b.type === "title-page")) {
+      return [createBlock("title-page"), ...existing];
+    }
+    return existing;
+  });
   const [projectName, setProjectName] = useState(project?.name || "");
   const [addMenuOpen, setAddMenuOpen] = useState(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
 
   const saveBlocks = useCallback((newBlocks: Block[]) => {
     setBlocks(newBlocks);
@@ -56,6 +84,9 @@ export default function EditorPage() {
   };
 
   const removeBlock = (id: string) => {
+    // Don't allow removing title page
+    const block = blocks.find(b => b.id === id);
+    if (block?.type === "title-page") return;
     saveBlocks(blocks.filter(b => b.id !== id));
   };
 
@@ -64,11 +95,28 @@ export default function EditorPage() {
   };
 
   const moveBlock = (idx: number, dir: -1 | 1) => {
+    const block = blocks[idx];
+    if (block.type === "title-page") return;
     const newIdx = idx + dir;
-    if (newIdx < 0 || newIdx >= blocks.length) return;
+    // Can't move above title page (index 0)
+    if (newIdx < 1 || newIdx >= blocks.length) return;
     const newBlocks = [...blocks];
     [newBlocks[idx], newBlocks[newIdx]] = [newBlocks[newIdx], newBlocks[idx]];
     saveBlocks(newBlocks);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = blocks.findIndex(b => b.id === active.id);
+    const newIndex = blocks.findIndex(b => b.id === over.id);
+
+    // Don't allow moving title page or moving items above it
+    if (blocks[oldIndex].type === "title-page") return;
+    if (newIndex === 0) return;
+
+    saveBlocks(arrayMove(blocks, oldIndex, newIndex));
   };
 
   const handleSave = () => {
@@ -88,6 +136,10 @@ export default function EditorPage() {
     );
   }
 
+  // Separate title page from sortable blocks
+  const titleBlock = blocks.find(b => b.type === "title-page");
+  const sortableBlocks = blocks.filter(b => b.type !== "title-page");
+
   return (
     <div className="h-full flex flex-col">
       {/* Toolbar */}
@@ -101,8 +153,6 @@ export default function EditorPage() {
           className="max-w-md font-display font-semibold border-none bg-transparent text-foreground focus-visible:ring-0 px-2"
         />
         <div className="flex-1" />
-
-        {/* Status */}
         <Select
           value={project.status}
           onValueChange={v => updateProject(projectId!, { status: v as any })}
@@ -114,7 +164,6 @@ export default function EditorPage() {
             <SelectItem value="done">Завершён</SelectItem>
           </SelectContent>
         </Select>
-
         <Button onClick={handleSave} size="sm" className="gap-2">
           <Save className="w-3.5 h-3.5" /> Сохранить
         </Button>
@@ -125,41 +174,52 @@ export default function EditorPage() {
         <ResizablePanel defaultSize={50} minSize={30}>
           <div className="h-full overflow-y-auto bg-background">
             <div className="max-w-3xl mx-auto py-8 px-4 space-y-3">
-              {blocks.length === 0 && (
-                <div className="text-center py-20 text-muted-foreground">
-                  <FileText className="w-12 h-12 mx-auto mb-4 opacity-30" />
-                  <p className="text-lg font-medium">Документ пуст</p>
-                  <p className="text-sm mb-4">Добавьте первый блок, чтобы начать</p>
-                </div>
-              )}
-
-              {blocks.map((block, idx) => (
-                <Card key={block.id} className="group border-border hover:border-primary/20 transition-colors animate-fade-in">
+              {/* Title page block — always first, not draggable */}
+              {titleBlock && (
+                <Card className="border-border border-primary/20">
                   <CardContent className="p-0">
-                    <div className="flex items-center gap-1 px-3 py-2 border-b border-border bg-muted/30">
-                      <GripVertical className="w-3.5 h-3.5 text-muted-foreground/50" />
-                      <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider flex-1">
-                        {BLOCK_TYPES.find(bt => bt.type === block.type)?.label || block.type}
+                    <div className="flex items-center gap-1 px-3 py-2 border-b border-border bg-primary/5">
+                      <Lock className="w-3.5 h-3.5 text-primary/50" />
+                      <span className="text-xs text-primary font-medium uppercase tracking-wider flex-1">
+                        Титульный лист
                       </span>
-                      <button onClick={() => moveBlock(idx, -1)} disabled={idx === 0}
-                        className="p-1 text-muted-foreground hover:text-foreground disabled:opacity-20 transition-colors">
-                        <ChevronUp className="w-3.5 h-3.5" />
-                      </button>
-                      <button onClick={() => moveBlock(idx, 1)} disabled={idx === blocks.length - 1}
-                        className="p-1 text-muted-foreground hover:text-foreground disabled:opacity-20 transition-colors">
-                        <ChevronDown className="w-3.5 h-3.5" />
-                      </button>
-                      <button onClick={() => removeBlock(block.id)}
-                        className="p-1 text-muted-foreground hover:text-destructive transition-colors">
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
                     </div>
                     <div className="p-4">
-                      <BlockEditor block={block} onChange={content => updateBlock(block.id, content)} />
+                      <BlockEditor block={titleBlock} onChange={content => updateBlock(titleBlock.id, content)} />
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+              )}
+
+              {/* Auto-generated TOC indicator */}
+              <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-muted/50 border border-dashed border-border">
+                <FileText className="w-3.5 h-3.5 text-muted-foreground" />
+                <span className="text-xs text-muted-foreground">Содержание — генерируется автоматически из заголовков</span>
+              </div>
+
+              {/* Sortable content blocks */}
+              <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                <SortableContext items={sortableBlocks.map(b => b.id)} strategy={verticalListSortingStrategy}>
+                  {sortableBlocks.map((block, idx) => (
+                    <SortableBlockCard
+                      key={block.id}
+                      block={block}
+                      index={idx}
+                      totalCount={sortableBlocks.length}
+                      onMove={(dir) => moveBlock(blocks.indexOf(block), dir)}
+                      onRemove={() => removeBlock(block.id)}
+                      onUpdate={(content) => updateBlock(block.id, content)}
+                    />
+                  ))}
+                </SortableContext>
+              </DndContext>
+
+              {sortableBlocks.length === 0 && (
+                <div className="text-center py-12 text-muted-foreground">
+                  <Type className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                  <p className="text-sm">Добавьте блоки контента</p>
+                </div>
+              )}
 
               <div className="relative flex justify-center pt-2">
                 <Button variant="outline" size="sm" onClick={() => setAddMenuOpen(!addMenuOpen)} className="gap-2 text-muted-foreground">
@@ -190,6 +250,75 @@ export default function EditorPage() {
     </div>
   );
 }
+
+/* ---- Sortable Block Card ---- */
+
+interface SortableBlockCardProps {
+  block: Block;
+  index: number;
+  totalCount: number;
+  onMove: (dir: -1 | 1) => void;
+  onRemove: () => void;
+  onUpdate: (content: Record<string, any>) => void;
+}
+
+function SortableBlockCard({ block, index, totalCount, onMove, onRemove, onUpdate }: SortableBlockCardProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: block.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 50 : undefined,
+  };
+
+  const label = block.type === "heading" ? "Заголовок"
+    : block.type === "text" ? "Текст"
+    : block.type === "image" ? "Изображение"
+    : block.type === "table" ? "Таблица"
+    : block.type;
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <Card className="group border-border hover:border-primary/20 transition-colors">
+        <CardContent className="p-0">
+          <div className="flex items-center gap-1 px-3 py-2 border-b border-border bg-muted/30">
+            <button {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing p-0.5 text-muted-foreground/50 hover:text-muted-foreground">
+              <GripVertical className="w-3.5 h-3.5" />
+            </button>
+            <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider flex-1">
+              {label}
+            </span>
+            <button onClick={() => onMove(-1)} disabled={index === 0}
+              className="p-1 text-muted-foreground hover:text-foreground disabled:opacity-20 transition-colors">
+              <ChevronUp className="w-3.5 h-3.5" />
+            </button>
+            <button onClick={() => onMove(1)} disabled={index === totalCount - 1}
+              className="p-1 text-muted-foreground hover:text-foreground disabled:opacity-20 transition-colors">
+              <ChevronDown className="w-3.5 h-3.5" />
+            </button>
+            <button onClick={onRemove}
+              className="p-1 text-muted-foreground hover:text-destructive transition-colors">
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          <div className="p-4">
+            <BlockEditor block={block} onChange={onUpdate} />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+/* ---- Block Editor ---- */
 
 function BlockEditor({ block, onChange }: { block: Block; onChange: (c: Record<string, any>) => void }) {
   switch (block.type) {
