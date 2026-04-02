@@ -27,56 +27,7 @@ export function getTypeLabel(type: string) {
   return TYPE_LABELS[type] || type;
 }
 
-const INITIAL_PROJECTS: Project[] = [
-  {
-    id: "1", name: "Исследование средневековых манускриптов",
-    description: "Анализ исторических текстов XV-XVII вв.",
-    type: "course", status: "active", updatedAt: "2026-03-28",
-    blocks: [
-      { id: "b1", type: "title-page", content: { university: "БГЭУ", title: "Исследование средневековых манускриптов", studentName: "Иванов Иван", group: "23ИСТ-1", teacherName: "Петрова Е.С.", city: "Минск", year: "2026" } },
-      { id: "b2", type: "heading", content: { text: "Введение", level: 1 } },
-      { id: "b3", type: "text", content: { text: "Данная работа посвящена исследованию средневековых манускриптов и их влиянию на развитие культуры." } },
-      { id: "b4", type: "heading", content: { text: "Глава 1: Происхождение манускриптов", level: 1 } },
-      { id: "b5", type: "text", content: { text: "Средневековые манускрипты представляют собой уникальные источники информации о жизни и культуре прошлых эпох. Их изучение позволяет глубже понять исторические процессы." } },
-    ],
-  },
-  {
-    id: "2", name: "Эволюция социальных сетей",
-    description: "Сравнительное исследование платформ",
-    type: "essay", status: "done", updatedAt: "2026-03-25",
-    blocks: [
-      { id: "b6", type: "heading", content: { text: "Эволюция социальных сетей", level: 1 } },
-      { id: "b7", type: "text", content: { text: "Социальные сети прошли долгий путь развития от простых форумов до сложных мультимедийных платформ." } },
-    ],
-  },
-  {
-    id: "3", name: "Опыт по термодинамике",
-    description: "Изучение закономерностей теплопередачи",
-    type: "lab", status: "inProgress", updatedAt: "2026-03-30",
-    blocks: [
-      { id: "b8", type: "heading", content: { text: "Лабораторная работа: Термодинамика", level: 1 } },
-      { id: "b9", type: "text", content: { text: "Цель работы: изучить закономерности теплопередачи в различных средах." } },
-    ],
-  },
-  {
-    id: "4", name: "Современная литература XXI века",
-    description: "Анализ произведений и литературных течений",
-    type: "essay", status: "active", updatedAt: "2026-03-27",
-    blocks: [],
-  },
-  {
-    id: "5", name: "Программирование на Python",
-    description: "Разработка небольшого приложения",
-    type: "course", status: "inProgress", updatedAt: "2026-03-29",
-    blocks: [],
-  },
-  {
-    id: "6", name: "Кибербезопасность",
-    description: "Анализ угроз и защита данных",
-    type: "course", status: "inProgress", updatedAt: "2026-03-31",
-    blocks: [],
-  },
-];
+const INITIAL_PROJECTS: Project[] = [];
 
 interface ProjectsContextType {
   projects: Project[];

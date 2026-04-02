@@ -26,7 +26,8 @@ export default function ProjectsPage() {
   const navigate = useNavigate();
   const [filter, setFilter] = useState<string>("Все");
   const [search, setSearch] = useState("");
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState<string | null>(null);
   const [newName, setNewName] = useState("");
   const [newDesc, setNewDesc] = useState("");
   const [newType, setNewType] = useState<Project["type"]>("course");
@@ -40,16 +41,15 @@ export default function ProjectsPage() {
   const handleCreate = () => {
     if (!newName.trim()) return;
     const p = createProject({ name: newName, description: newDesc, type: newType, status: "active" });
-    setDialogOpen(false);
+    setCreateDialogOpen(false);
     setNewName(""); setNewDesc("");
     navigate(`/projects/${p.id}`);
   };
-
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-display font-bold text-foreground">Проекты</h1>
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button className="gap-2"><Plus className="w-4 h-4" /> Новый проект</Button>
           </DialogTrigger>
@@ -120,7 +120,7 @@ export default function ProjectsPage() {
                 className="group cursor-pointer border-border hover:border-primary/30 transition-all relative"
                 onClick={() => navigate(`/projects/${p.id}`)}
               >
-                <CardContent className="p-5">
+                <CardContent className="p-5 pb-8 h-full">
                   <div className="flex items-start justify-between mb-2">
                     <h3 className="font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1 pr-2">
                       {p.name}
@@ -132,13 +132,26 @@ export default function ProjectsPage() {
                     <span>{getTypeLabel(p.type)}</span>
                     <span>{p.updatedAt}</span>
                   </div>
-                  <button
-                    onClick={e => { e.stopPropagation(); deleteProject(p.id); }}
-                    className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all p-1"
-                    title="Удалить"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
+                  <Dialog open={deleteDialogOpen === p.id} onOpenChange={(open) => setDeleteDialogOpen(open ? p.id : null)}>
+                    <DialogTrigger asChild>
+                      <button
+                        onClick={(e) => {e.stopPropagation(); setDeleteDialogOpen(p.id);}}
+                        className="absolute top-auto bottom-1 right-1 opacity-0 group-hover:opacity-100 text-muted-foreground hover:text-destructive transition-all p-1"
+                        title="Удалить"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent onClick={(e) => e.stopPropagation()}>
+                      <DialogHeader><DialogTitle className="font-display">Вы уверены, что хотите удалить проект?</DialogTitle></DialogHeader>
+                      <div className="space-x-4 mt-2 justify-end">
+                        <Button variant="destructive" onClick={()=>{ deleteProject(p.id); setDeleteDialogOpen(null) }} className="w-30">Удалить</Button>
+                        <DialogTrigger asChild>
+                          <Button onClick={() => {setDeleteDialogOpen(null)}} variant="outline" className="w-30">Отмена</Button>
+                        </DialogTrigger>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </CardContent>
               </Card>
             );

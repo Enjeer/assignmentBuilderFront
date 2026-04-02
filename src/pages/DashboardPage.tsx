@@ -1,10 +1,16 @@
+import { useState } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useProjects, getTypeLabel } from "@/lib/projects-context";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Project } from "@/lib/projects-context";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FileText, Clock, CheckCircle, AlertCircle, Plus, ArrowRight } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const STATUS_CONFIG: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive" }> = {
   active: { label: "Активный", variant: "outline" },
@@ -14,8 +20,13 @@ const STATUS_CONFIG: Record<string, { label: string; variant: "default" | "secon
 
 export default function DashboardPage() {
   const { user } = useAuth();
-  const { projects } = useProjects();
+  const { projects, createProject, deleteProject } = useProjects();
   const navigate = useNavigate();
+
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const [newName, setNewName] = useState("");
+  const [newDesc, setNewDesc] = useState("");
+  const [newType, setNewType] = useState<Project["type"]>("course");
 
   const stats = {
     total: projects.length,
@@ -35,19 +46,58 @@ export default function DashboardPage() {
     { label: "Завершено", value: stats.done, icon: CheckCircle, color: "text-success" },
   ];
 
+  const handleCreate = () => {
+    if (!newName.trim()) return;
+    const p = createProject({ name: newName, description: newDesc, type: newType, status: "active" });
+    setCreateDialogOpen(false);
+    setNewName(""); setNewDesc("");
+    navigate(`/projects/${p.id}`);
+  };
+
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto space-y-8 animate-fade-in">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-display font-bold text-foreground">
-            Привет, {user?.name} 👋
+            Привет, {user?.user_name}
           </h1>
           <p className="text-muted-foreground mt-1">Вот обзор ваших проектов</p>
         </div>
-        <Button onClick={() => navigate("/projects")} className="gap-2">
+        <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="gap-2"><Plus className="w-4 h-4" /> Новый проект</Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader><DialogTitle className="font-display">Создать проект</DialogTitle></DialogHeader>
+            <div className="space-y-4 mt-2">
+              <div className="space-y-2">
+                <Label>Название</Label>
+                <Input value={newName} onChange={e => setNewName(e.target.value)} placeholder="Название работы" />
+              </div>
+              <div className="space-y-2">
+                <Label>Описание</Label>
+                <Input value={newDesc} onChange={e => setNewDesc(e.target.value)} placeholder="Краткое описание" />
+              </div>
+              <div className="space-y-2">
+                <Label>Тип работы</Label>
+                <Select value={newType} onValueChange={v => setNewType(v as Project["type"])}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="course">Курсовая</SelectItem>
+                    <SelectItem value="essay">Эссе</SelectItem>
+                    <SelectItem value="lab">Лабораторная</SelectItem>
+                    <SelectItem value="diplom">Дипломная</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <Button onClick={handleCreate} className="w-full">Создать</Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+        {/* <Button onClick={() => navigate("/projects")} className="gap-2">
           <Plus className="w-4 h-4" /> Новый проект
-        </Button>
+        </Button> */}
       </div>
 
       {/* Stats */}

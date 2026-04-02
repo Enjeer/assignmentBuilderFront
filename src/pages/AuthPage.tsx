@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, Loader2 } from "lucide-react";
+import Icon from '@/assets/img/Base-logo-blue.svg';
 
 export default function AuthPage() {
   const { login, signUp } = useAuth();
@@ -36,7 +37,8 @@ export default function AuthPage() {
       }
       navigate("/", { replace: true });
     } catch (err: any) {
-      setError(err.message || "Произошла ошибка");
+      const message = err || "Произошла ошибка";
+      setError(String(message));
     } finally {
       setLoading(false);
     }
@@ -47,11 +49,11 @@ export default function AuthPage() {
       <div className="w-full max-w-md animate-fade-in">
         <div className="flex items-center justify-center gap-3 mb-8">
           <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary">
-            <FileText className="w-6 h-6 text-primary-foreground" />
+            <img src={Icon} alt="" />
           </div>
           <div>
             <h1 className="text-2xl font-display font-bold text-foreground tracking-tight">
-              Assignment Builder
+              Fine PAPERs
             </h1>
             <p className="text-sm text-muted-foreground">Конструктор учебных работ</p>
           </div>
@@ -70,13 +72,13 @@ export default function AuthPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {isSignUp && (
                 <div className="space-y-2">
-                  <Label htmlFor="name">Имя</Label>
-                  <Input id="name" value={name} onChange={e => setName(e.target.value)} placeholder="Ваше имя" required />
+                  <Label htmlFor="name">Логин</Label>
+                  <Input id="name" value={name} onChange={e => setName(e.target.value)} placeholder="Ваш логин" required />
                 </div>
               )}
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@example.com" required />
+                <Label htmlFor="email">Email{isSignUp ? '' : ' или логин'}</Label>
+                <Input id="email" type={`${isSignUp? 'email': 'text'}`} value={email} onChange={e => setEmail(e.target.value)} placeholder='email@example.com' required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Пароль</Label>
