@@ -1,12 +1,13 @@
 import { useAuth } from "@/lib/auth-context";
 import { useNavigate, useLocation } from "react-router-dom";
-import { LayoutDashboard, FolderOpen, LogOut, FileText, User } from "lucide-react";
+import { LayoutDashboard, FolderOpen, LogOut, FileText, Headset, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Icon from '@/assets/img/NoBase-logo-white.svg';
 
 const navItems = [
   { label: "Дашборд", icon: LayoutDashboard, path: "/" },
   { label: "Проекты", icon: FolderOpen, path: "/projects" },
+  { label: "Поддержка", icon: Headset, path: "/support"},
 ];
 
 export default function AppSidebar() {
@@ -15,15 +16,15 @@ export default function AppSidebar() {
   const location = useLocation();
 
   return (
-    <aside className="w-64 h-screen flex flex-col bg-sidebar border-r border-sidebar-border shrink-0">
+    <aside className="w-80 h-screen flex flex-col bg-sidebar border-r border-sidebar-border shrink-0">
       {/* Logo */}
       <div className="p-5 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
-          <div className="w-14 h-14 rounded-lg flex items-center justify-center">
+          <div className="w-12 h-12 rounded-lg flex items-center justify-center">
             {/* <FileText className="w-5 h-5 text-sidebar-primary-foreground" /> */}
             <img src={Icon} alt="" />
           </div>
-          <span className="font-display font-bold text-lg text-sidebar-foreground tracking-tight">
+          <span className="font-display font-bold text-md text-sidebar-foreground tracking-tight">
             Fine<br />PAPERs
           </span>
         </div>

@@ -39,6 +39,17 @@ export default function DashboardPage() {
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
     .slice(0, 4);
 
+  const normalizeDate = (lastUpdated) => {
+    const convertedDate = new Date(lastUpdated);
+    const normalizedDate = convertedDate.toLocaleString('ru-RU', {
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+    return normalizedDate;
+  }
+
   const statCards = [
     { label: "Всего проектов", value: stats.total, icon: FileText, color: "text-primary" },
     { label: "Активных", value: stats.active, icon: AlertCircle, color: "text-warning" },
@@ -46,9 +57,9 @@ export default function DashboardPage() {
     { label: "Завершено", value: stats.done, icon: CheckCircle, color: "text-success" },
   ];
 
-  const handleCreate = () => {
+  const handleCreate = async () => {
     if (!newName.trim()) return;
-    const p = createProject({ name: newName, description: newDesc, type: newType, status: "active" });
+    const p = await createProject({ name: newName, description: newDesc, type: newType, status: "active" });
     setCreateDialogOpen(false);
     setNewName(""); setNewDesc("");
     navigate(`/projects/${p.id}`);
@@ -132,7 +143,7 @@ export default function DashboardPage() {
                 className="cursor-pointer border-border hover:border-primary/30 transition-all group"
                 onClick={() => navigate(`/projects/${p.id}`)}
               >
-                <CardContent className="p-5">
+                <CardContent className="p-5 flex flex-col">
                   <div className="flex items-start justify-between mb-2">
                     <h3 className="font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">
                       {p.name}
@@ -141,10 +152,10 @@ export default function DashboardPage() {
                       {sc.label}
                     </Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{p.description}</p>
+                  <p className="text-sm text-muted-foreground line-clamp-2 mb-3 flex-1">{p.description}</p>
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <span>{getTypeLabel(p.type)}</span>
-                    <span>Обновлён {p.updatedAt}</span>
+                    <span>Обновлён: {normalizeDate(p.updatedAt)}</span>
                   </div>
                 </CardContent>
               </Card>

@@ -48,8 +48,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user_name: data.user_name || login
       };
 
+      // const userToSave: User = {
+      //   id: '123123123',
+      //   email: 'wallesalex205@gmail.com',
+      //   user_name: "Enjeer"
+      // }    
+
+      localStorage.setItem(TOKEN_KEY, data.access);
+      // localStorage.setItem(TOKEN_KEY, "1231232131");
       localStorage.setItem(USER_KEY, JSON.stringify(userToSave));
-      localStorage.setItem(TOKEN_KEY, JSON.stringify(data.access));
       
       setUser(userToSave);
 
@@ -81,7 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user_name: data.user_name || user_name
       };
 
-      localStorage.setItem(TOKEN_KEY, JSON.stringify(data.access));
+      localStorage.setItem(TOKEN_KEY, data.access);
       localStorage.setItem(USER_KEY, JSON.stringify(userToSave));
       
       setUser(userToSave);

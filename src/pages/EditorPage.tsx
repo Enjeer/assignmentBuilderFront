@@ -1,6 +1,7 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useProjects, type Block } from "@/lib/projects-context";
+import ImageBlockEditor from "@/lib/ImageBlockEditor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -31,6 +32,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { api } from "@/lib/axios";
 
 const BLOCK_TYPES = [
   { type: "heading", label: "Заголовок", icon: Heading },
@@ -44,7 +46,7 @@ function createBlock(type: Block["type"]): Block {
   switch (type) {
     case "heading": return { id, type, content: { text: "Новый заголовок", level: 1 } };
     case "text": return { id, type, content: { text: "" } };
-    case "title-page": return { id, type, content: { university: "", title: "", studentName: "", group: "", teacherName: "", city: "Минск", year: new Date().getFullYear().toString() } };
+    case "title-page": return { id, type, content: { university: "", department: "", subject: "", title: "", studentName: "", faculty: "", group: "", teacherName: "", jobTitle: "", city: "Минск", year: new Date().getFullYear().toString() } };
     case "image": return { id, type, content: { url: "", caption: "" } };
     case "table": return { id, type, content: { rows: 3, cols: 3, data: Array(9).fill("") } };
     default: return { id, type: "text", content: { text: "" } };
@@ -53,20 +55,40 @@ function createBlock(type: Block["type"]): Block {
 
 export default function EditorPage() {
   const { projectId } = useParams<{ projectId: string }>();
-  const { getProject, updateProject, updateBlocks } = useProjects();
+  const { getProject, updateProject, updateBlocks, downloadProject } = useProjects();
   const navigate = useNavigate();
   const project = getProject(projectId || "");
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const [blocks, setBlocks] = useState<Block[]>(() => {
-    const existing = project?.blocks || [];
-    // Ensure title page exists and is first
-    if (!existing.find(b => b.type === "title-page")) {
+    const existing = Array.isArray(project?.blocks) 
+      ? project.blocks.filter(Boolean) 
+      : [];
+
+    const hasTitlePage = existing.some(b => b && b.type === "title-page");
+
+    if (!hasTitlePage) {
       return [createBlock("title-page"), ...existing];
     }
     return existing;
   });
+
+  useEffect(() => {
+    if (project && !isInitialized) {
+      const initialBlocks = project.blocks?.length > 0 
+        ? project.blocks 
+        : [createBlock("title-page")];
+        
+      setBlocks(initialBlocks);
+      setProjectName(project.name);
+      setIsInitialized(true);
+    }
+  }, [project, isInitialized]);
+
   const [projectName, setProjectName] = useState(project?.name || "");
   const [addMenuOpen, setAddMenuOpen] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -75,7 +97,7 @@ export default function EditorPage() {
 
   const saveBlocks = useCallback((newBlocks: Block[]) => {
     setBlocks(newBlocks);
-    if (projectId) updateBlocks(projectId, newBlocks);
+    setIsDirty(true);
   }, [projectId, updateBlocks]);
 
   const addBlock = (type: Block["type"]) => {
@@ -84,7 +106,6 @@ export default function EditorPage() {
   };
 
   const removeBlock = (id: string) => {
-    // Don't allow removing title page
     const block = blocks.find(b => b.id === id);
     if (block?.type === "title-page") return;
     saveBlocks(blocks.filter(b => b.id !== id));
@@ -98,7 +119,6 @@ export default function EditorPage() {
     const block = blocks[idx];
     if (block.type === "title-page") return;
     const newIdx = idx + dir;
-    // Can't move above title page (index 0)
     if (newIdx < 1 || newIdx >= blocks.length) return;
     const newBlocks = [...blocks];
     [newBlocks[idx], newBlocks[newIdx]] = [newBlocks[newIdx], newBlocks[idx]];
@@ -112,19 +132,92 @@ export default function EditorPage() {
     const oldIndex = blocks.findIndex(b => b.id === active.id);
     const newIndex = blocks.findIndex(b => b.id === over.id);
 
-    // Don't allow moving title page or moving items above it
     if (blocks[oldIndex].type === "title-page") return;
     if (newIndex === 0) return;
 
     saveBlocks(arrayMove(blocks, oldIndex, newIndex));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (saving) return;
+    setSaving(true);
+
+    try {
+    const updatedBlocks = await Promise.all(blocks.map(async (block) => {
+      const isLocalBlob = block.type === 'image' && block.content.url?.startsWith('blob:');
+      if (block.type === 'image' && isLocalBlob && block.content.file) {
+        try {
+          const formData = new FormData();
+          formData.append('file', block.content.file);
+          const res = await api.post('upload_image/', formData);
+          return {
+            ...block,
+            content: { ...block.content, url: res.data.url, file: undefined }
+          };
+        } catch (e) {
+          return block;
+        }
+      }
+      return block;
+    }));
+
     if (projectId) {
-      updateProject(projectId, { name: projectName });
-      updateBlocks(projectId, blocks);
+      await updateProject(projectId, { name: projectName });
+      await updateBlocks(projectId, updatedBlocks);
     }
+
     toast({ title: "Сохранено", description: "Проект успешно сохранён" });
+    } catch (error) {
+      console.error('Общая ошибка сохранения проекта:', error);
+      toast({ 
+        title: "Ошибка", 
+        description: "Не удалось сохранить проект", 
+        variant: "destructive" 
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!isDirty || saving) return;
+
+    const timer = setTimeout(async () => {
+      const hasPendingImages = blocks.some(
+        b => b.type === 'image' && b.content.url?.startsWith('blob:')
+      );
+
+      if (hasPendingImages) return;
+
+      try {
+        await updateBlocks(projectId!, blocks);
+        setIsDirty(false);
+        toast({ title: "Автосохранение выполнено" });
+      } catch (e) {
+        console.error("Auto-save failed", e);
+      }
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [blocks, isDirty, projectId, saving]);
+
+const handleDownload = async () => {
+    // if (saving) return;
+    // setSaving(true);
+
+    try {
+      await downloadProject(project.id, project.name);
+      toast({ title: "Выгрузка", description: "Проект успешно выгружен" });
+    } catch (error) {
+      console.error('Общая ошибка загрузки проекта:', error);
+      toast({ 
+        title: "Ошибка", 
+        description: "Не удалось выгрузить проект", 
+        variant: "destructive" 
+      });
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (!project) {
@@ -139,6 +232,10 @@ export default function EditorPage() {
   // Separate title page from sortable blocks
   const titleBlock = blocks.find(b => b.type === "title-page");
   const sortableBlocks = blocks.filter(b => b.type !== "title-page");
+
+  if (!project || (blocks.length === 1 && !isInitialized)) {
+    return <div className="flex items-center justify-center h-full">Загрузка данных...</div>;
+  }
 
   return (
     <div className="h-full flex flex-col">
@@ -166,6 +263,9 @@ export default function EditorPage() {
         </Select>
         <Button onClick={handleSave} size="sm" className="gap-2">
           <Save className="w-3.5 h-3.5" /> Сохранить
+        </Button>
+        <Button variant="outline" onClick={handleDownload} size="sm" className="gap-2">
+          <Save className="w-3.5 h-3.5" /> Скачать
         </Button>
       </header>
 
@@ -244,7 +344,7 @@ export default function EditorPage() {
         <ResizableHandle withHandle />
 
         <ResizablePanel defaultSize={50} minSize={25}>
-          <DocumentPreview blocks={blocks} projectName={projectName} />
+          <DocumentPreview blocks={blocks} projectName={projectName} imgNum={0}/>
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
@@ -362,10 +462,14 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (c: Record<s
         <div className="space-y-3">
           {[
             { key: "university", label: "Учебное заведение" },
+            { key: "department", label: "Факультет"},
+            { key: "subject", label: "Наименование предмета"},
             { key: "title", label: "Тема работы" },
             { key: "studentName", label: "ФИО студента" },
+            { key: "faculty", label: "Факультет"},
             { key: "group", label: "Группа" },
-            { key: "teacherName", label: "ФИО преподавателя" },
+            { key: "teacherName", label: "ФИО руководителя" },
+            { key: "jobTitle", label: "Должность руководителя"},
             { key: "city", label: "Город" },
             { key: "year", label: "Год" },
           ].map(f => (
@@ -383,23 +487,10 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (c: Record<s
 
     case "image":
       return (
-        <div className="space-y-3">
-          <Input
-            value={block.content.url || ""}
-            onChange={e => onChange({ ...block.content, url: e.target.value })}
-            placeholder="URL изображения..."
-            className="text-sm"
-          />
-          <Input
-            value={block.content.caption || ""}
-            onChange={e => onChange({ ...block.content, caption: e.target.value })}
-            placeholder="Подпись к изображению..."
-            className="text-sm"
-          />
-          {block.content.url && (
-            <img src={block.content.url} alt={block.content.caption} className="max-w-full rounded-md border border-border" />
-          )}
-        </div>
+        <ImageBlockEditor 
+          content={block.content} 
+          onChange={onChange} 
+        />
       );
 
     case "table": {
@@ -421,7 +512,12 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (c: Record<s
             <Input type="number" min={1} max={10} value={cols}
               onChange={e => {
                 const newCols = Number(e.target.value);
-                const newData = Array(rows * newCols).fill("").map((_, i) => data[i] || "");
+                const newData = Array(rows * newCols).fill("");
+                for (let r = 0; r < rows; r++) {
+                  for (let c = 0; c < Math.min(cols, newCols); c++) {
+                    newData[r * newCols + c] = data[r * cols + c] || "";
+                  }
+                }
                 onChange({ ...block.content, cols: newCols, data: newData });
               }}
               className="w-16 h-7 text-xs" />

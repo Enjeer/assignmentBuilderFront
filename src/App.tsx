@@ -4,11 +4,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/lib/auth-context";
 import { ProjectsProvider } from "@/lib/projects-context";
+import { TicketsProvider } from "./lib/tickets-context";
 import MainLayout from "@/layouts/MainLayout";
 import AuthPage from "@/pages/AuthPage";
 import DashboardPage from "@/pages/DashboardPage";
 import ProjectsPage from "@/pages/ProjectsPage";
 import EditorPage from "@/pages/EditorPage";
+import SupportPage from "./pages/SupportPage";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +31,7 @@ function AppRoutes() {
         <Route index element={<DashboardPage />} />
         <Route path="projects" element={<ProjectsPage />} />
         <Route path="projects/:projectId" element={<EditorPage />} />
+        <Route path="support" element={<TicketsProvider><SupportPage /></TicketsProvider>}/>
       </Route>
       <Route path="*" element={<NotFound />} />
     </Routes>

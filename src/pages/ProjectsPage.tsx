@@ -38,12 +38,36 @@ export default function ProjectsPage() {
     return statusMatch && searchMatch;
   });
 
-  const handleCreate = () => {
+  const normalizeDate = (lastUpdated) => {
+    const convertedDate = new Date(lastUpdated);
+    const normalizedDate = convertedDate.toLocaleString('ru-RU', {
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+    return normalizedDate;
+  }
+
+  const handleCreate = async () => {
     if (!newName.trim()) return;
-    const p = createProject({ name: newName, description: newDesc, type: newType, status: "active" });
-    setCreateDialogOpen(false);
-    setNewName(""); setNewDesc("");
-    navigate(`/projects/${p.id}`);
+    
+    try {
+      const p = await createProject({ 
+        name: newName, 
+        description: newDesc, 
+        type: newType, 
+        status: "active" 
+      });
+      
+      setCreateDialogOpen(false);
+      setNewName(""); 
+      setNewDesc("");
+      
+      navigate(`/projects/${p.id}`);
+    } catch (err) {
+      alert("Не удалось создать проект");
+    }
   };
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto space-y-6 animate-fade-in">
@@ -120,17 +144,17 @@ export default function ProjectsPage() {
                 className="group cursor-pointer border-border hover:border-primary/30 transition-all relative"
                 onClick={() => navigate(`/projects/${p.id}`)}
               >
-                <CardContent className="p-5 pb-8 h-full">
+                <CardContent className="p-5 pb-7 h-full flex flex-col">
                   <div className="flex items-start justify-between mb-2">
                     <h3 className="font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1 pr-2">
                       {p.name}
                     </h3>
                     <Badge variant={sc.variant} className="shrink-0 text-xs">{sc.label}</Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground line-clamp-2 mb-3">{p.description}</p>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <p className="text-sm text-muted-foreground line-clamp-2 mb-3 flex-1">{p.description}</p>
+                  <div className="flex items-center justify-between text-xs text-muted-foreground mt-auto">
                     <span>{getTypeLabel(p.type)}</span>
-                    <span>{p.updatedAt}</span>
+                    <span>Обновлен: {normalizeDate(p.updatedAt)}</span>
                   </div>
                   <Dialog open={deleteDialogOpen === p.id} onOpenChange={(open) => setDeleteDialogOpen(open ? p.id : null)}>
                     <DialogTrigger asChild>
