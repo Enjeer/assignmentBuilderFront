@@ -1,8 +1,11 @@
 import { useAuth } from "@/lib/auth-context";
 import { useNavigate, useLocation } from "react-router-dom";
 import { LayoutDashboard, FolderOpen, LogOut, FileText, Headset, User } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import Icon from '@/assets/img/NoBase-logo-white.svg';
+import { useState } from "react";
 
 const navItems = [
   { label: "Дашборд", icon: LayoutDashboard, path: "/" },
@@ -12,6 +15,7 @@ const navItems = [
 
 export default function AppSidebar() {
   const { user, logout } = useAuth();
+  const [logoutOpen, setLogoutOpen] = useState<boolean>(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -69,6 +73,26 @@ export default function AppSidebar() {
           >
             <LogOut className="w-4 h-4" />
           </button>
+          <Dialog open={logoutOpen === true} onOpenChange={(open) => setLogoutOpen(open ? true : false)}>
+                    <DialogTrigger asChild>
+                      <button
+                        onClick={(e) => {e.stopPropagation(); setLogoutOpen(true);}}
+                        className="text-sidebar-foreground/50 hover:text-destructive transition-colors"
+                        title="Выйти"
+                      >
+                        <LogOut className="w-4 h-4" />
+                      </button>
+                    </DialogTrigger>
+                    <DialogContent onClick={(e) => e.stopPropagation()}>
+                      <DialogHeader><DialogTitle className="font-display">Вы уверены, что хотите выйти?</DialogTitle></DialogHeader>
+                      <div className="space-x-4 mt-2 justify-end">
+                        <Button variant="destructive" onClick={()=>{ logout(); navigate("/auth"); setLogoutOpen(false) }} className="w-30">Выйти</Button>
+                        <DialogTrigger asChild>
+                          <Button onClick={() => {setLogoutOpen(false)}} variant="outline" className="w-30">Отмена</Button>
+                        </DialogTrigger>
+                      </div>
+                    </DialogContent>
+          </Dialog>
         </div>
       </div>
     </aside>
