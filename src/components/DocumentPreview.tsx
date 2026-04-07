@@ -175,7 +175,7 @@ function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }) {
           </div>
 
           <div className="flex flex-col gap-4">
-            <h1 className="text-[18pt] font-bold tracking-widest">КУРСОВАЯ РАБОТА</h1>
+            <h1 className="text-[18pt] font-bold tracking-widest preview">КУРСОВАЯ РАБОТА</h1>
             <div className="text-[14pt] space-y-2">
               <p>по дисциплине: <span className="font-medium">{c.subject || "Микроэкономика..."}</span></p>
               <p>на тему: <span className="font-bold">{c.title || "Развитие банковской системы..."}</span></p>
