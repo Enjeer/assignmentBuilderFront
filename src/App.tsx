@@ -12,6 +12,8 @@ import ProjectsPage from "@/pages/ProjectsPage";
 import EditorPage from "@/pages/EditorPage";
 import SupportPage from "./pages/SupportPage";
 import NotFound from "@/pages/NotFound";
+import { Analytics } from "@vercel/analytics/react"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 const queryClient = new QueryClient();
 
@@ -48,6 +50,8 @@ const App = () => (
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>
+    <Analytics />
+    <SpeedInsights />
   </QueryClientProvider>
 );
 
