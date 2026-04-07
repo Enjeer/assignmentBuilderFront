@@ -13,7 +13,7 @@ import EditorPage from "@/pages/EditorPage";
 import SupportPage from "./pages/SupportPage";
 import NotFound from "@/pages/NotFound";
 import { Analytics } from "@vercel/analytics/react"
-import { SpeedInsights } from "@vercel/speed-insights/next"
+import { SpeedInsights } from "@vercel/speed-insights/react"
 
 const queryClient = new QueryClient();
 
