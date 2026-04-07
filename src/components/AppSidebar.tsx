@@ -66,13 +66,6 @@ export default function AppSidebar() {
             <p className="text-sm font-medium text-sidebar-foreground truncate">{user?.user_name}</p>
             <p className="text-xs text-sidebar-foreground/50 truncate">{user?.email}</p>
           </div>
-          <button
-            onClick={() => { logout(); navigate("/auth"); }}
-            className="text-sidebar-foreground/50 hover:text-destructive transition-colors"
-            title="Выйти"
-          >
-            <LogOut className="w-4 h-4" />
-          </button>
           <Dialog open={logoutOpen === true} onOpenChange={(open) => setLogoutOpen(open ? true : false)}>
                     <DialogTrigger asChild>
                       <button
