@@ -462,7 +462,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (c: Record<s
         <div className="space-y-3">
           {[
             { key: "university", label: "Учебное заведение" },
-            { key: "department", label: "Факультет"},
+            { key: "department", label: "Кафедра"},
             { key: "subject", label: "Наименование предмета"},
             { key: "title", label: "Тема работы" },
             { key: "studentName", label: "ФИО студента" },
