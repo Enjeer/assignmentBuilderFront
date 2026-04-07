@@ -160,7 +160,7 @@ function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }) {
     case "title-page": {
       const c = block.content;
       return (
-        <div className="flex flex-col items-center justify-between h-full text-center py-2 font-serif">
+        <div className="flex flex-col justify-between h-full text-center py-2 font-serif">
           <div className="space-y-6">
             <div className="text-[12pt] leading-tight">
               <p className="uppercase">Министерство образования Республики Беларусь</p>
@@ -169,7 +169,7 @@ function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }) {
             
             <div className="text-[14pt] mt-8">
               <p>Кафедра <span className="inline-block border-b border-black min-w-[250px] text-left px-2">
-                {c.department || ""}
+                {c.department || "..."}
               </span></p>
             </div>
           </div>
@@ -177,23 +177,23 @@ function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }) {
           <div className="flex flex-col gap-4">
             <h1 className="text-[18pt] font-bold tracking-widest">КУРСОВАЯ РАБОТА</h1>
             <div className="text-[14pt] space-y-2">
-              <p>по дисциплине: <span className="font-medium">{c.subject || "Макроэкономика"}</span></p>
+              <p>по дисциплине: <span className="font-medium">{c.subject || "Микроэкономика..."}</span></p>
               <p>на тему: <span className="font-bold">{c.title || "Развитие банковской системы..."}</span></p>
             </div>
           </div>
 
-          <div className="self-end w-[350px] text-left text-[11pt] space-y-6 mr-4">
+          <div className="self-start w-full text-left text-[11pt] space-y-6 mr-4">
             <div className="grid grid-cols-[1fr_auto_1fr] gap-2 items-end">
               <div>
                 <p>Студент</p>
-                <p className="text-[10pt] leading-none">{c.group || "ФФБД, 3-й курс"}</p>
+                <p className="text-[10pt] leading-none">{c.group || "Факультет, курс"}</p>
               </div>
               <div className="text-[7pt] text-center px-2">
                 <p>(подпись)</p>
                 <p>(дата)</p>
               </div>
               <div className="text-right font-medium">
-                {c.studentName || "А.Г. Потыко"}
+                {c.studentName || "А.Б. Иванов(а)"}
               </div>
             </div>
 
@@ -207,7 +207,7 @@ function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }) {
                 <p>(дата)</p>
               </div>
               <div className="text-right font-medium">
-                {c.teacherName || "В.М. Горяев"}
+                {c.teacherName || "А.Б. Иванов(а)"}
               </div>
             </div>
           </div>
