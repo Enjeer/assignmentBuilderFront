@@ -1,0 +1,12 @@
+:root{
+    --background-gradient: linear-gradient(90deg, #F2F3F7 0%, #F2F3F8 100%);
+    --background-support: #F2F3F7;
+    --nav-background: #F2F3F7;
+    --nav-border: solid 1px #414141;
+
+    --error: #EF3838;
+    --warning: #F0B14A;
+    --success: #6AC861;
+    --purple: #a262df;
+    --blue: #4385d1;
+}   
