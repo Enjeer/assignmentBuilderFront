@@ -449,7 +449,7 @@ function SortableBlockCard({ block, index, totalCount, onMove, onRemove, onUpdat
     : block.type;
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <div ref={setNodeRef} style={style} className="relative">
       {block.chapterColor && (
         <div 
           className={cn(
