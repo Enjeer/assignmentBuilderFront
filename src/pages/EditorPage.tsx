@@ -497,6 +497,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (c: Record<s
               <DropdownMenuContent align="start" className="max-w-[300px]">
                 {unis.map(u => (
                   <DropdownMenuItem 
+                    className="focus:bg-primary"
                     key={u.key} 
                     onSelect={() => onChange({ ...block.content, university: u.label })}
                   >
