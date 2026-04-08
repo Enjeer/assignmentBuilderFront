@@ -4,8 +4,22 @@ import { useProjects, type Block } from "@/lib/projects-context";
 import ImageBlockEditor from "@/lib/ImageBlockEditor";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuTrigger, 
+  DropdownMenuItem, 
+  DropdownMenuSeparator,
+  DropdownMenuLabel
+} from "@/components/ui/dropdown-menu";
 import { Card, CardContent } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { 
+  Select, 
+  SelectContent, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue 
+} from "@/components/ui/select";
 import {
   ArrowLeft, Plus, Trash2, GripVertical, Type, Heading, Image, Table, FileText, Save,
   ChevronUp, ChevronDown, Lock
@@ -13,7 +27,11 @@ import {
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
-import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
+import { 
+  ResizablePanelGroup, 
+  ResizablePanel, 
+  ResizableHandle 
+} from "@/components/ui/resizable";
 import DocumentPreview from "@/components/DocumentPreview";
 import {
   DndContext,
@@ -458,15 +476,49 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (c: Record<s
       );
 
     case "title-page":
+      const unis = [
+        { key: "БГЭУ", label: "БЕЛОРУССКИЙ ГОСУДАРСТВЕННЫЙ ЭКОНОМИЧЕСКИЙ УНИВЕРСИТЕТ" },
+        { key: "БГУ", label: "БЕЛОРУССКИЙ ГОСУДАРСТВЕННЫЙ УНИВЕРСИТЕТ" },
+      ];
+
+      const selectedUni = unis.find(u => u.label === block.content.university);
+
       return (
         <div className="space-y-3">
+          <div key="university" className="grid grid-cols-[140px_1fr] items-center gap-2">
+            <label className="text-xs text-muted-foreground font-medium">Учебное заведение</label>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="h-8 justify-start font-normal text-sm overflow-hidden">
+                  {selectedUni ? selectedUni.key : "Выберите ВУЗ"}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="max-w-[300px]">
+                {unis.map(u => (
+                  <DropdownMenuItem 
+                    key={u.key} 
+                    onSelect={() => onChange({ ...block.content, university: u.label })}
+                  >
+                    <div className="flex flex-col">
+                      <span className="font-bold">{u.key}</span>
+                      <span className="text-[10px] text-muted-foreground leading-tight">{u.label}</span>
+                    </div>
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                  <DropdownMenuLabel className="font-normal text-[11px] text-muted-foreground italic">
+                    В скором времени мы добавим и другие ВУЗы
+                  </DropdownMenuLabel>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
           {[
-            { key: "university", label: "Учебное заведение" },
             { key: "department", label: "Кафедра"},
-            { key: "subject", label: "Наименование предмета"},
             { key: "title", label: "Тема работы" },
             { key: "studentName", label: "ФИО студента" },
             { key: "faculty", label: "Факультет"},
+            { key: "studying year", label: "Курс" },
             { key: "group", label: "Группа" },
             { key: "teacherName", label: "ФИО руководителя" },
             { key: "jobTitle", label: "Должность руководителя"},
