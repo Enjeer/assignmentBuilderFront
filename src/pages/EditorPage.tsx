@@ -497,7 +497,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (c: Record<s
               <DropdownMenuContent align="start" className="max-w-[300px]">
                 {unis.map(u => (
                   <DropdownMenuItem 
-                    className="focus:bg-primary"
+                    className="focus:bg-muted"
                     key={u.key} 
                     onSelect={() => onChange({ ...block.content, university: u.label })}
                   >
@@ -508,7 +508,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (c: Record<s
                   </DropdownMenuItem>
                 ))}
                 <DropdownMenuSeparator />
-                  <DropdownMenuLabel className="font-normal text-[11px] text-muted-foreground italic">
+                  <DropdownMenuLabel className="font-normal text-[11px] text-muted-foreground italic bg-muted/30 mt-1 py-2">
                     В скором времени мы добавим и другие ВУЗы
                   </DropdownMenuLabel>
               </DropdownMenuContent>
