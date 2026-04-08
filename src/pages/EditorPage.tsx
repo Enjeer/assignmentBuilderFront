@@ -502,7 +502,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (c: Record<s
                     onSelect={() => onChange({ ...block.content, university: u.label })}
                   >
                     <div className="flex flex-col">
-                      <span className="font-bold">{u.key}</span>
+                      <span className="font-bold focus:text-black">{u.key}</span>
                       <span className="text-[10px] text-muted-foreground leading-tight">{u.label}</span>
                     </div>
                   </DropdownMenuItem>
@@ -516,6 +516,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (c: Record<s
           </div>
           {[
             { key: "department", label: "Кафедра"},
+            { key: "subject", label: "Наименование предмета"},
             { key: "title", label: "Тема работы" },
             { key: "studentName", label: "ФИО студента" },
             { key: "faculty", label: "Факультет"},
@@ -529,7 +530,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (c: Record<s
             <div key={f.key} className="grid grid-cols-[140px_1fr] items-center gap-2">
               <label className="text-xs text-muted-foreground font-medium">{f.label}</label>
               <Input
-                value={block.content[f.key] || ""}
+                value={""}
                 onChange={e => onChange({ ...block.content, [f.key]: e.target.value })}
                 className="h-8 text-sm"
               />
