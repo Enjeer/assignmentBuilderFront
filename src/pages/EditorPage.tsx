@@ -384,12 +384,12 @@ const handleDownload = async () => {
                 </div>
               )}
 
-              <div className="relative flex justify-center pt-2" ref={menuContainerRef}>
+              <div className="relative flex justify-center pt-2">
                 <Button variant="outline" size="sm" onClick={() => setAddMenuOpen(!addMenuOpen)} className="gap-2 text-muted-foreground">
                   <Plus className="w-4 h-4" /> Добавить блок
                 </Button>
                 {addMenuOpen && (
-                  <div className="absolute top-full mt-2 bg-card border border-border rounded-lg shadow-lg p-2 z-10 flex gap-1 animate-fade-in">
+                  <div className="absolute top-full mt-2 bg-card border border-border rounded-lg shadow-lg p-2 z-10 flex gap-1 animate-fade-in" ref={menuContainerRef}>
                     {BLOCK_TYPES.map(bt => (
                       <button key={bt.type} onClick={() => addBlock(bt.type as Block["type"])}
                         className="flex flex-col items-center gap-1 px-3 py-2 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors text-xs">
