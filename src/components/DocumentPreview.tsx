@@ -229,7 +229,18 @@ function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }) {
       return <Tag className={sizes[level]}>{block.content.text || ""}</Tag>;
     }
     case "text":
-      return <div className="mb-3 whitespace-pre-wrap text-justify indent-[1.25cm]">{block.content.text || ""}</div>;
+      return (
+        <div className="mb-3 text-justify">
+          {(block.content.text || "").split("\n").map((paragraph, index) => (
+            <p 
+              key={index} 
+              className="indent-[1.25cm] min-h-[1.5em]"
+            >
+              {paragraph}
+            </p>
+          ))}
+        </div>
+      );
     case "image":
       return (
         <div className="my-4 text-center">

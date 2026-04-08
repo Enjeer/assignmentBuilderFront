@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useProjects, type Block } from "@/lib/projects-context";
 import ImageBlockEditor from "@/lib/ImageBlockEditor";
@@ -59,10 +59,15 @@ const BLOCK_TYPES = [
   { type: "table", label: "Таблица", icon: Table },
 ] as const;
 
+type EnrichedBlock = Block & {
+  chapterColor: string | null;
+  isChapterRoot: boolean;
+};
+
 function createBlock(type: Block["type"]): Block {
   const id = crypto.randomUUID();
   switch (type) {
-    case "heading": return { id, type, content: { text: "Новый заголовок", level: 1 } };
+    case "heading": return { id, type, content: { text: "Новый заголовок", level: 1} };
     case "text": return { id, type, content: { text: "" } };
     case "title-page": return { id, type, content: { university: "", department: "", subject: "", title: "", studentName: "", faculty: "", group: "", teacherName: "", jobTitle: "", city: "Минск", year: new Date().getFullYear().toString() } };
     case "image": return { id, type, content: { url: "", caption: "" } };
@@ -108,10 +113,23 @@ export default function EditorPage() {
   const [saving, setSaving] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
 
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   );
+
+  const menuContainerRef = useRef(null);
+
+  useEffect(() => {
+    if (addMenuOpen && menuContainerRef.current) {
+      // Прокручиваем так, чтобы кнопка и открывшееся меню стали видимы
+      menuContainerRef.current.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'end' // Прокрутит так, чтобы нижний край элемента был внизу экрана
+      });
+    }
+  }, [addMenuOpen]); 
 
   const saveBlocks = useCallback((newBlocks: Block[]) => {
     setBlocks(newBlocks);
@@ -247,13 +265,40 @@ const handleDownload = async () => {
     );
   }
 
-  // Separate title page from sortable blocks
   const titleBlock = blocks.find(b => b.type === "title-page");
   const sortableBlocks = blocks.filter(b => b.type !== "title-page");
+  
 
   if (!project || (blocks.length === 1 && !isInitialized)) {
     return <div className="flex items-center justify-center h-full">Загрузка данных...</div>;
   }
+
+  const CHAPTER_COLORS = [
+    "chapter-blue",
+    "chapter-purple",
+    "chapter-green",
+    "chapter-amber"
+  ];
+
+  const getBlocksWithMetadata = (blocks: Block[]): EnrichedBlock[] => {
+    let currentChapterIndex = -1;
+
+    return blocks.map((block) => {
+      if (block.type === "heading" && (block.content.level === 1)) {
+        currentChapterIndex++;
+      }
+
+      return {
+        ...block,
+        chapterColor: currentChapterIndex >= 0 
+          ? CHAPTER_COLORS[currentChapterIndex % CHAPTER_COLORS.length] 
+          : null,
+        isChapterRoot: block.type === "heading" && block.content.level <= 1
+      };
+    });
+  };
+
+  const enrichedBlocks = getBlocksWithMetadata(sortableBlocks);
 
   return (
     <div className="h-full flex flex-col">
@@ -317,13 +362,13 @@ const handleDownload = async () => {
 
               {/* Sortable content blocks */}
               <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                <SortableContext items={sortableBlocks.map(b => b.id)} strategy={verticalListSortingStrategy}>
-                  {sortableBlocks.map((block, idx) => (
+                <SortableContext items={enrichedBlocks.map(b => b.id)} strategy={verticalListSortingStrategy}>
+                  {enrichedBlocks.map((block, idx) => (
                     <SortableBlockCard
                       key={block.id}
                       block={block}
                       index={idx}
-                      totalCount={sortableBlocks.length}
+                      totalCount={enrichedBlocks.length}
                       onMove={(dir) => moveBlock(blocks.indexOf(block), dir)}
                       onRemove={() => removeBlock(block.id)}
                       onUpdate={(content) => updateBlock(block.id, content)}
@@ -339,7 +384,7 @@ const handleDownload = async () => {
                 </div>
               )}
 
-              <div className="relative flex justify-center pt-2">
+              <div className="relative flex justify-center pt-2" ref={menuContainerRef}>
                 <Button variant="outline" size="sm" onClick={() => setAddMenuOpen(!addMenuOpen)} className="gap-2 text-muted-foreground">
                   <Plus className="w-4 h-4" /> Добавить блок
                 </Button>
@@ -372,7 +417,7 @@ const handleDownload = async () => {
 /* ---- Sortable Block Card ---- */
 
 interface SortableBlockCardProps {
-  block: Block;
+  block: EnrichedBlock;
   index: number;
   totalCount: number;
   onMove: (dir: -1 | 1) => void;
@@ -405,6 +450,16 @@ function SortableBlockCard({ block, index, totalCount, onMove, onRemove, onUpdat
 
   return (
     <div ref={setNodeRef} style={style}>
+      {block.chapterColor && (
+        <div 
+          className={cn(
+            "absolute left-0 top-1 bottom-1 w-1 rounded-full transition-all duration-500",
+            block.chapterColor,
+            block.isChapterRoot ? "w-1.5 opacity-100" : "opacity-40" 
+          )}
+          style={{ backgroundColor: `hsl(var(--chapter-color))` }}
+        />
+      )}
       <Card className="group border-border hover:border-primary/20 transition-colors">
         <CardContent className="p-0">
           <div className="flex items-center gap-1 px-3 py-2 border-b border-border bg-muted/30">
@@ -471,7 +526,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (c: Record<s
           value={block.content.text}
           onChange={e => onChange({ ...block.content, text: e.target.value })}
           placeholder="Введите текст..."
-          className="min-h-[100px] border-none bg-transparent px-0 focus-visible:ring-0 resize-none leading-relaxed"
+          className="min-h-[100px] border-none bg-transparent px-0 focus-visible:ring-0 resize-none leading-relaxed indent-8"
         />
       );
 
