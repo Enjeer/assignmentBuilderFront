@@ -1,5 +1,3 @@
-// FULL DocumentPreview with pagination + FIXED TOC
-
 import { type Block } from "@/lib/projects-context";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useMemo } from "react";

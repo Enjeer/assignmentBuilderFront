@@ -267,7 +267,7 @@ const handleDownload = async () => {
 
   const titleBlock = blocks.find(b => b.type === "title-page");
   const sortableBlocks = blocks.filter(b => b.type !== "title-page");
-  
+  const CHAPTER_COLORS = [ "chapter-blue", "chapter-purple", "chapter-green", "chapter-amber" ];
 
   if (!project || (blocks.length === 1 && !isInitialized)) {
     return <div className="flex items-center justify-center h-full">Загрузка данных...</div>;
