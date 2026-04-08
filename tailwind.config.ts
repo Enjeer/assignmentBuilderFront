@@ -69,18 +69,10 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        chapterblue: {
-          DEFAULT: "hsl(var(--chapter-blue))",
-        },
-        chapterpurple: {
-          DEFAULT: "hsl(var(--chapter-purple))",
-        },
-        chaptergreen: {
-          DEFAULT: "hsl(var(--chapter-green))",
-        },
-        chapteramber: {
-          DEFAULT: "hsl(var(--chapter-amber))",
-        },
+        chapterblue: "hsl(var(--chapter-blue))",
+        chapterpurple: "hsl(var(--chapter-purple))",
+        chaptergreen: "hsl(var(--chapter-green))",
+        chapteramber: "hsl(var(--chapter-amber))",
       },
       borderRadius: {
         lg: "var(--radius)",
