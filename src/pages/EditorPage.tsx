@@ -273,13 +273,6 @@ const handleDownload = async () => {
     return <div className="flex items-center justify-center h-full">Загрузка данных...</div>;
   }
 
-  const CHAPTER_COLORS = [
-    "chapter-blue",
-    "chapter-purple",
-    "chapter-green",
-    "chapter-amber"
-  ];
-
   const getBlocksWithMetadata = (blocks: Block[]): EnrichedBlock[] => {
     let currentChapterIndex = -1;
 
@@ -448,21 +441,31 @@ function SortableBlockCard({ block, index, totalCount, onMove, onRemove, onUpdat
     : block.type === "table" ? "Таблица"
     : block.type;
 
+  const chapterBgMap = {
+    chapterblue: "bg-chapterblue/20",
+    chapterpurple: "bg-chapterpurple/20",
+    chaptergreen: "bg-chaptergreen/20",
+    chapteramber: "bg-chapteramber/20",
+  };
+
+  const chapterBgLightMap = {
+    chapterblue: "bg-chapterblue/10",
+    chapterpurple: "bg-chapterpurple/10",
+    chaptergreen: "bg-chaptergreen/10",
+    chapteramber: "bg-chapteramber/10",
+  };
+
   return (
     <div ref={setNodeRef} style={style} className="relative">
-      {block.chapterColor && (
-        <div 
-          className={cn(
-            "absolute left-0 top-1 bottom-1 w-1 rounded-full transition-all duration-500",
-            block.chapterColor,
-            block.isChapterRoot ? "w-1.5 opacity-100" : "opacity-40" 
-          )}
-          style={{ backgroundColor: `hsl(var(--chapter-color))` }}
-        />
-      )}
       <Card className="group border-border hover:border-primary/20 transition-colors">
         <CardContent className="p-0">
-          <div className="flex items-center gap-1 px-3 py-2 border-b border-border bg-muted/30">
+          <div className={cn(
+              "flex items-center gap-1 px-3 py-2 border-b border-border transition-colors",
+              block.chapterColor &&
+                (block.isChapterRoot
+                  ? chapterBgMap[block.chapterColor]
+                  : chapterBgLightMap[block.chapterColor])
+            )}>
             <button {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing p-0.5 text-muted-foreground/50 hover:text-muted-foreground">
               <GripVertical className="w-3.5 h-3.5" />
             </button>
