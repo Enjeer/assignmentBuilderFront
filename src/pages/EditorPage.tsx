@@ -449,10 +449,10 @@ function SortableBlockCard({ block, index, totalCount, onMove, onRemove, onUpdat
   };
 
   const chapterBgLightMap = {
-    chapterblue: "bg-chapterblue/80",
-    chapterpurple: "bg-chapterpurple/80",
-    chaptergreen: "bg-chaptergreen/80",
-    chapteramber: "bg-chapteramber/80",
+    chapterblue: "bg-chapterblue/60",
+    chapterpurple: "bg-chapterpurple/60",
+    chaptergreen: "bg-chaptergreen/60",
+    chapteramber: "bg-chapteramber/60",
   };
 
   return (
