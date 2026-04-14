@@ -1,6 +1,0 @@
-@font-face {
-    font-family: 'JetBrainsMono';
-    src: local('JetBrainsMono'), url(@/assets/fonts/JetBrainsMono[wght].ttf) format('truetype');
-    /* other formats include: 'woff2', 'truetype, 'opentype',
-                                'embedded-opentype', and 'svg' */
-}

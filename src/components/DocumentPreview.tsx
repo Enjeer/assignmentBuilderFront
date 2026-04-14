@@ -47,12 +47,11 @@ function splitIntoPages(blocks: Block[]): Block[][] {
   return pages;
 }
 
-// Фиксируем ширину на 210mm, чтобы текст не перепрыгивал
 const PAGE_STYLE = "bg-white text-black shadow-lg w-[210mm] px-[25mm] py-[20mm] text-[12pt] leading-[1.5] relative overflow-hidden flex flex-col shrink-0";
 const FONT_STYLE = { 
   fontFamily: "'Times New Roman', 'Liberation Serif', serif",
   aspectRatio: "1 / 1.4142",
-  height: "297mm" // Фиксированная высота A4
+  height: "297mm"
 };
 
 export default function DocumentPreview({ blocks, projectName }: DocumentPreviewProps) {
