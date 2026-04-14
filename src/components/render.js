@@ -1,5 +1,5 @@
 import { pdf } from '@react-pdf/renderer';
-import { DocumentPreviewPDF } from '@/components/DocumentPreviewPDF';
+import { DocumentPreviewPDF } from '@/components/PreviewPdfRenderer';
 
 self.onmessage = async function (e) {
     const { blocks, projectName } = e.data;
