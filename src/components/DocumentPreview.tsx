@@ -302,7 +302,7 @@ export default function DocumentPreview({ blocks, projectName }: DocumentPreview
 
     // Создаем воркер
     const worker = new Worker(
-      new URL('@/workers/render.ts', import.meta.url),
+      new URL('@/components/render.ts', import.meta.url),
       { type: 'module' }
     );
 
