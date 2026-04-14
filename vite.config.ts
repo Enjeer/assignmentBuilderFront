@@ -11,7 +11,9 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
     },
   },
-  plugins: [react()],
+  plugins: [
+    react(),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -24,5 +26,27 @@ export default defineConfig(({ mode }) => ({
       "@tanstack/react-query",
       "@tanstack/query-core",
     ],
+  },
+  worker: {
+    format: 'es',
+    plugins: () => [react()],
+  },
+  optimizeDeps: {
+    include: [
+      '@react-pdf/renderer',
+      'react',
+      'react-dom',
+    ],
+    exclude: ['@react-pdf/renderer'],
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-pdf': ['@react-pdf/renderer'],
+        },
+      },
+    },
+    target: 'es2020',
   },
 }));
