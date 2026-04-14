@@ -56,96 +56,94 @@ const FONT_STYLE = {
 
 export default function DocumentPreview({ blocks, projectName }: DocumentPreviewProps) {
   const titleBlock = useMemo(() => blocks.find(b => b.type === "title-page"), [blocks]);
-  const contentBlocks = useMemo(() => blocks.filter(b => b.type !== "title-page"), [blocks]);
+  const contentPages = useMemo(() => splitIntoPages(blocks), [blocks]);
   const tocEntries = useMemo(() => collectTOC(blocks), [blocks]);
   const allImageBlocks = useMemo(() => blocks.filter(b => b.type === "image"), [blocks]);
   
   const containerRef = useRef<HTMLDivElement>(null);
   const [zoomLevel, setZoomLevel] = useState(1);
 
+  // Следим за шириной контейнера и подгоняем zoom
   useEffect(() => {
     const updateZoom = () => {
       if (!containerRef.current) return;
       const parentWidth = containerRef.current.offsetWidth;
-      const padding = 48;
-      const a4WidthPx = 794; 
-      setZoomLevel(Math.min((parentWidth - padding) / a4WidthPx, 1));
+      const padding = 48; // p-6 с двух сторон
+      const availableWidth = parentWidth - padding;
+      const a4WidthPx = 794; // ~210mm при стандартном DPI
+      
+      const newZoom = availableWidth / a4WidthPx;
+      setZoomLevel(Math.min(newZoom, 1)); // Не увеличиваем больше 100%
     };
+
     const observer = new ResizeObserver(updateZoom);
     if (containerRef.current) observer.observe(containerRef.current);
     updateZoom();
+
     return () => observer.disconnect();
   }, []);
 
   const hasTitlePage = !!titleBlock;
   const tocPageNum = hasTitlePage ? 2 : 1;
+  const contentStartPage = hasTitlePage ? 3 : 2;
 
   return (
     <div className="h-full flex flex-col bg-muted/30" ref={containerRef}>
-      <div className="px-4 py-2 border-b border-border bg-card shrink-0 flex justify-between items-center">
-        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Предпросмотр (Auto-Layout)</span>
+      <div className="px-4 py-2 border-b border-border bg-card shrink-0">
+        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Предпросмотр</span>
       </div>
-      
       <ScrollArea className="flex-1">
+        {/* Применяем zoom к обертке всех страниц */}
         <div 
-          className="p-6 flex flex-col items-center gap-8 origin-top" 
-          style={{ transform: `scale(${zoomLevel})` }}
+          className="p-6 flex flex-col items-center gap-8" 
+          style={{ zoom: zoomLevel }}
         >
-          {titleBlock && (
+          {blocks.length === 0 ? (
             <div className={PAGE_STYLE} style={FONT_STYLE}>
-              <PreviewBlock block={titleBlock} imgNum={0}/>
+              <p className="text-gray-400 italic text-center mt-20">Документ пуст</p>
             </div>
-          )}
+          ) : (
+            <>
+              {titleBlock && (
+                <div className={PAGE_STYLE} style={FONT_STYLE}>
+                  <PreviewBlock block={titleBlock} imgNum={0}/>
+                </div>
+              )}
 
-          <div className={PAGE_STYLE} style={FONT_STYLE}>
-            <h2 className="text-[16pt] font-bold text-center mb-8 uppercase preview">Содержание</h2>
-            {tocEntries.length === 0 ? (
-              <p className="text-gray-400 italic text-center">Добавьте заголовки</p>
-            ) : (
-              <div className="space-y-1">
-                {tocEntries.map((entry, i) => (
-                  <div key={i} className="flex items-baseline gap-1" style={{ paddingLeft: `${(entry.level - 1) * 1.25}cm` }}>
-                    <span className={entry.level === 1 ? "font-bold" : ""}>{entry.text}</span>
-                    <span className="flex-1 border-b border-dotted border-gray-400 mx-1 min-w-[2cm] translate-y-[-3px]" />
-                    <span className="text-right tabular-nums">{entry.page}</span>
+              <div className={PAGE_STYLE} style={FONT_STYLE}>
+                <h2 className="text-[16pt] font-bold text-center mb-8 uppercase preview">Содержание</h2>
+                {tocEntries.length === 0 ? (
+                  <p className="text-gray-400 italic text-center">Добавьте заголовки</p>
+                ) : (
+                  <div className="space-y-1">
+                    {tocEntries.map((entry, i) => (
+                      <div key={i} className="flex items-baseline gap-1" style={{ paddingLeft: `${(entry.level - 1) * 1.25}cm` }}>
+                        <span className={entry.level === 1 ? "font-bold" : ""}>{entry.text}</span>
+                        <span className="flex-1 border-b border-dotted border-gray-400 mx-1 min-w-[2cm] translate-y-[-3px]" />
+                        <span className="text-right tabular-nums">{entry.page}</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
+                <PageNumber num={tocPageNum} />
               </div>
-            )}
-            <PageNumber num={tocPageNum} />
-          </div>
 
-          <div 
-            className="flex flex-row items-start"
-            style={{
-              height: "297mm",
-              columnWidth: "210mm",
-              columnGap: "32px", 
-              columnFill: "auto",
-              width: "auto",
-            }}
-          >
-            <div 
-              style={{ 
-                width: "210mm", 
-                height: "100%",
-                padding: "20mm 25mm",
-                backgroundColor: "white",
-                boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
-                color: "black"
-              }}
-            >
-              <div className="content-flow font-serif text-[12pt] leading-[1.5]">
-                {contentBlocks.map(block => {
-                  let currentImgNum = 0;
-                  if (block.type === "image") {
-                    currentImgNum = allImageBlocks.findIndex(b => b.id === block.id) + 1;
-                  }
-                  return <PreviewBlock key={block.id} block={block} imgNum={currentImgNum} />;
-                })}
-              </div>
-            </div>
-          </div>
+              {contentPages.map((pageBlocks, pageIdx) => (
+                <div key={pageIdx} className={PAGE_STYLE} style={FONT_STYLE}>
+                  <div className="flex-1">
+                    {pageBlocks.map(block => {
+                      let currentImgNum = 0;
+                      if (block.type === "image") {
+                        currentImgNum = allImageBlocks.findIndex(b => b.id === block.id) + 1;
+                      }
+                      return <PreviewBlock key={block.id} block={block} imgNum={currentImgNum} />;
+                    })}
+                  </div>
+                  <PageNumber num={contentStartPage + pageIdx} />
+                </div>
+              ))}
+            </>
+          )}
         </div>
       </ScrollArea>
     </div>
