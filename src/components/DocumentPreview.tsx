@@ -275,26 +275,132 @@
 //   }
 // }
 
-import React, {useEffect} from "react";
-import { PDFViewer } from '@react-pdf/renderer';
-import DocumentPreviewPDF from "@/components/PreviewPdfRenderer";
+import React, { useState, useEffect, useCallback } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
-export default function DocumentPreview({ blocks, projectName }) {
+interface DocumentPreviewProps {
+  blocks: any[];
+  projectName: string;
+}
+
+export default function DocumentPreview({ blocks, projectName }: DocumentPreviewProps) {
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const containerRef = React.useRef<HTMLDivElement>(null);
+  const [zoomLevel, setZoomLevel] = useState(1);
+
+  // Генерируем PDF в воркере при изменении blocks
   useEffect(() => {
-    const worker = new Worker(new URL('@/components/render.js', import.meta.url));
+    if (blocks.length === 0) {
+      setPdfUrl(null);
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    // Создаем воркер
+    const worker = new Worker(
+      new URL('@/workers/pdf-worker.ts', import.meta.url),
+      { type: 'module' }
+    );
+
+    // Отправляем данные воркеру
     worker.postMessage({ blocks, projectName });
 
-    worker.onmessage = ({ data }) => {
+    // Получаем результат
+    worker.onmessage = (e) => {
+      const { blob, error: workerError } = e.data;
+      
+      if (workerError) {
+        setError(workerError);
+        setIsLoading(false);
+        return;
+      }
+
+      // Создаем URL для blob
+      const url = URL.createObjectURL(blob);
+      setPdfUrl(url);
+      setIsLoading(false);
+
+      // Очищаем старый URL при следующем обновлении
+      return () => {
+        URL.revokeObjectURL(url);
+      };
     };
 
-    return () => worker.terminate();
+    worker.onerror = (err) => {
+      console.error('Worker error:', err);
+      setError('Ошибка при генерации PDF');
+      setIsLoading(false);
+    };
+
+    return () => {
+      worker.terminate();
+    };
   }, [blocks, projectName]);
 
+  // Адаптивный зум
+  useEffect(() => {
+    const updateZoom = () => {
+      if (!containerRef.current) return;
+      const parentWidth = containerRef.current.offsetWidth;
+      const padding = 48;
+      const availableWidth = parentWidth - padding;
+      const a4WidthPx = 794;
+      
+      const newZoom = availableWidth / a4WidthPx;
+      setZoomLevel(Math.min(newZoom, 1));
+    };
+
+    const observer = new ResizeObserver(updateZoom);
+    if (containerRef.current) observer.observe(containerRef.current);
+    updateZoom();
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div style={{ width: '100%', height: '100%' }}>
-      <PDFViewer style={{ width: '100%', height: '100%' }}>
-        <DocumentPreviewPDF blocks={blocks} projectName={projectName} />
-      </PDFViewer>
+    <div className="h-full flex flex-col bg-muted/30" ref={containerRef}>
+      <div className="px-4 py-2 border-b border-border bg-card shrink-0 flex justify-between items-center">
+        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+          Предпросмотр
+        </span>
+        {isLoading && (
+          <span className="text-xs text-muted-foreground">Генерация PDF...</span>
+        )}
+      </div>
+      
+      <ScrollArea className="flex-1">
+        <div 
+          className="p-6 flex flex-col items-center" 
+          style={{ zoom: zoomLevel }}
+        >
+          {blocks.length === 0 ? (
+            <div className="bg-white shadow-lg w-[210mm] h-[297mm] flex items-center justify-center">
+              <p className="text-gray-400 italic">Документ пуст</p>
+            </div>
+          ) : error ? (
+            <div className="bg-white shadow-lg w-[210mm] h-[297mm] flex items-center justify-center">
+              <p className="text-red-400">{error}</p>
+            </div>
+          ) : isLoading ? (
+            <div className="bg-white shadow-lg w-[210mm] h-[297mm] flex items-center justify-center">
+              <div className="text-center">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mb-2"></div>
+                <p className="text-gray-500">Генерация документа...</p>
+              </div>
+            </div>
+          ) : pdfUrl ? (
+            <iframe
+              src={pdfUrl}
+              className="bg-white shadow-lg w-[210mm] h-[297mm] border-0"
+              title="Document Preview"
+            />
+          ) : null}
+        </div>
+      </ScrollArea>
     </div>
   );
 }

@@ -9,8 +9,7 @@ import {
   Font,
 } from '@react-pdf/renderer';
 
-// --- Типы контента (no `any`) ---
-
+// --- Типы контента ---
 interface TitlePageContent {
   university?: string;
   department?: string;
@@ -21,16 +20,16 @@ interface TitlePageContent {
   teacherName?: string;
   teacherRank?: string;
   city?: string;
-  year?: string;
+  year?: string | number;
 }
 
 interface HeadingContent {
-  text: string;
-  level: 1 | 2 | 3;
+  text?: string;
+  level?: 1 | 2 | 3;
 }
 
 interface TextContent {
-  text: string;
+  text?: string;
 }
 
 interface ImageContent {
@@ -39,9 +38,9 @@ interface ImageContent {
 }
 
 interface TableContent {
-  rows: number;
-  cols: number;
-  data: string[];
+  rows?: number;
+  cols?: number;
+  data?: string[];
 }
 
 type BlockContent =
@@ -58,11 +57,7 @@ interface Block {
 }
 
 // --- Стили ---
-
-// Font.register({...}) — оставь закомментированным, если шрифты не нужны сейчас.
-
 const stylesheet = StyleSheet.create({
-  // Общие стили страницы
   page: {
     backgroundColor: 'white',
     paddingTop: '20mm',
@@ -74,8 +69,6 @@ const stylesheet = StyleSheet.create({
     lineHeight: 1.5,
     position: 'relative',
   },
-
-  // Номер страницы
   pageNumber: {
     position: 'absolute',
     bottom: '10mm',
@@ -85,8 +78,6 @@ const stylesheet = StyleSheet.create({
     fontSize: 10,
     color: '#9CA3AF',
   },
-
-  // Титульный лист
   titlePageContainer: {
     flex: 1,
     justifyContent: 'space-between',
@@ -146,8 +137,6 @@ const stylesheet = StyleSheet.create({
     letterSpacing: 1,
     marginTop: 16,
   },
-
-  // Содержание
   tocTitle: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -176,8 +165,6 @@ const stylesheet = StyleSheet.create({
   tocPage: {
     fontSize: 12,
   },
-
-  // Заголовки
   heading1: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -197,15 +184,11 @@ const stylesheet = StyleSheet.create({
     marginTop: 16,
     marginBottom: 8,
   },
-
-  // Текст
   paragraph: {
     marginBottom: 12,
     textAlign: 'justify',
     textIndent: '1.25cm',
   },
-
-  // Изображения
   imageContainer: {
     marginVertical: 16,
     alignItems: 'center',
@@ -220,8 +203,6 @@ const stylesheet = StyleSheet.create({
     marginTop: 4,
     textAlign: 'center',
   },
-
-  // Таблицы
   table: {
     marginVertical: 16,
     borderWidth: 1,
@@ -238,11 +219,14 @@ const stylesheet = StyleSheet.create({
     fontSize: 11,
   },
   tableCellHeader: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: 'black',
+    padding: 4,
+    fontSize: 11,
     backgroundColor: '#F3F4F6',
     fontWeight: 'bold',
   },
-
-  // Пустой документ
   emptyDocument: {
     color: '#9CA3AF',
     fontStyle: 'italic',
@@ -252,7 +236,6 @@ const stylesheet = StyleSheet.create({
 });
 
 // --- Оглавление ---
-
 interface TOCEntry {
   text: string;
   level: number;
@@ -263,18 +246,17 @@ function collectTOC(blocks: Block[]): TOCEntry[] {
   for (const block of blocks) {
     if (block.type === 'title-page') continue;
     if (block.type === 'heading') {
-      const { text, level } = block.content as HeadingContent;
+      const content = block.content as HeadingContent;
       entries.push({
-        text: text || '',
-        level: level || 1,
+        text: content.text || '',
+        level: content.level || 1,
       });
     }
   }
   return entries;
 }
 
-// --- TitlePage --- Тут раньше была строка 235
-
+// --- Компоненты ---
 const TitlePage: React.FC<{ block: Block }> = ({ block }) => {
   const c = block.content as TitlePageContent;
   return (
@@ -284,9 +266,7 @@ const TitlePage: React.FC<{ block: Block }> = ({ block }) => {
           Министерство образования Республики Беларусь
         </Text>
         <Text style={stylesheet.ministryText}>
-          УО «
-          {c.university || 'БЕЛОРУССКИЙ ГОСУДАРСТВЕННЫЙ ЭКОНОМИЧЕСКИЙ УНИВЕРСИТЕТ'}
-          »
+          УО «{c.university || 'БЕЛОРУССКИЙ ГОСУДАРСТВЕННЫЙ ЭКОНОМИЧЕСКИЙ УНИВЕРСИТЕТ'}»
         </Text>
 
         <View style={stylesheet.departmentRow}>
@@ -308,13 +288,17 @@ const TitlePage: React.FC<{ block: Block }> = ({ block }) => {
         <View style={stylesheet.signatureRow}>
           <View>
             <Text style={stylesheet.signatureLabel}>Студент</Text>
-            <Text style={stylesheet.groupText}>{c.group || 'Факультет, курс'}</Text>
+            <Text style={stylesheet.groupText}>
+              {c.group || 'Факультет, курс'}
+            </Text>
           </View>
           <View>
             <Text style={stylesheet.signaturePlaceholder}>(подпись)</Text>
             <Text style={stylesheet.signaturePlaceholder}>(дата)</Text>
           </View>
-          <Text style={stylesheet.signatureName}>{c.studentName || 'А.Б. Иванов(а)'}</Text>
+          <Text style={stylesheet.signatureName}>
+            {c.studentName || 'А.Б. Иванов(а)'}
+          </Text>
         </View>
 
         <View style={stylesheet.signatureRow}>
@@ -328,7 +312,9 @@ const TitlePage: React.FC<{ block: Block }> = ({ block }) => {
             <Text style={stylesheet.signaturePlaceholder}>(подпись) (оценка)</Text>
             <Text style={stylesheet.signaturePlaceholder}>(дата)</Text>
           </View>
-          <Text style={stylesheet.signatureName}>{c.teacherName || 'А.Б. Иванов(а)'}</Text>
+          <Text style={stylesheet.signatureName}>
+            {c.teacherName || 'А.Б. Иванов(а)'}
+          </Text>
         </View>
       </View>
 
@@ -338,8 +324,6 @@ const TitlePage: React.FC<{ block: Block }> = ({ block }) => {
     </View>
   );
 };
-
-// --- TableOfContents --- (фикс в стилях не нужен)
 
 const TableOfContents: React.FC<{ entries: TOCEntry[]; hasTitlePage: boolean }> = ({
   entries,
@@ -351,61 +335,67 @@ const TableOfContents: React.FC<{ entries: TOCEntry[]; hasTitlePage: boolean }> 
       {entries.length === 0 ? (
         <Text style={stylesheet.emptyDocument}>Добавьте заголовки</Text>
       ) : (
-        entries.map((entry, index) => (
-          <View
-            key={index}
-            style={[
-              stylesheet.tocEntry,
-              { paddingLeft: `${(entry.level - 1) * 35}px` },
-            ]}
-          >
-            <Text
-              style={entry.level === 1 ? stylesheet.tocTextBold : stylesheet.tocText}
-            >
-              {entry.text}
-            </Text>
-            <View style={stylesheet.tocDots} />
-            <Text
-              style={stylesheet.tocPage}
-              render={(props: { pageNumber: number }) => {
-                const baseOffset = hasTitlePage ? 3 : 2;
-                return `${baseOffset + index}`;
-              }}
-            />
-          </View>
-        ))
+        entries.map((entry, index) => {
+          const entryStyle = {
+            ...stylesheet.tocEntry,
+            paddingLeft: `${(entry.level - 1) * 35}px`,
+          };
+          
+          return (
+            <View key={index} style={entryStyle}>
+              <Text style={entry.level === 1 ? stylesheet.tocTextBold : stylesheet.tocText}>
+                {entry.text}
+              </Text>
+              <View style={stylesheet.tocDots} />
+              <Text
+                style={stylesheet.tocPage}
+                render={({ pageNumber }) => {
+                  const baseOffset = hasTitlePage ? 3 : 2;
+                  return `${baseOffset + index}`;
+                }}
+              />
+            </View>
+          );
+        })
       )}
     </View>
   );
 };
 
-// --- ContentBlock --- (основное исправление)
-
 const ContentBlock: React.FC<{ block: Block; imageIndex?: number }> = ({ block, imageIndex }) => {
   switch (block.type) {
     case 'heading': {
-      const { text, level } = block.content as HeadingContent;
-      const safeLevel = level === 2 || level === 3 ? level : 1;
+      const content = block.content as HeadingContent;
+      const level = content.level || 1;
       const styleMap: Record<number, any> = {
         1: stylesheet.heading1,
         2: stylesheet.heading2,
         3: stylesheet.heading3,
       };
-      return <Text style={styleMap[safeLevel]}>{text || ''}</Text>;
+      return <Text style={styleMap[level]}>{content.text || ''}</Text>;
     }
 
     case 'text': {
-      const rawText = typeof block.content.text === 'string' ? block.content.text : '';
+      const content = block.content as TextContent;
+      const rawText = content.text || '';
       const paragraphs = rawText
         .split('\n')
         .map((line) => line.trim())
         .filter((line) => line.length > 0);
 
+      if (paragraphs.length === 0) {
+        return (
+          <View>
+            <Text style={stylesheet.paragraph}> </Text>
+          </View>
+        );
+      }
+
       return (
         <View>
           {paragraphs.map((paragraph, index) => (
             <Text key={index} style={stylesheet.paragraph}>
-              {paragraph || ' '}
+              {paragraph}
             </Text>
           ))}
         </View>
@@ -413,16 +403,14 @@ const ContentBlock: React.FC<{ block: Block; imageIndex?: number }> = ({ block, 
     }
 
     case 'image': {
-      const { url, caption } = block.content as ImageContent;
-      const safeUrl = typeof url === 'string' && url.length > 0 ? url : null;
-
+      const content = block.content as ImageContent;
       return (
         <View style={stylesheet.imageContainer}>
-          {safeUrl ? (
+          {content.url ? (
             <>
-              <Image src={safeUrl} style={stylesheet.image} />
+              <Image src={content.url} style={stylesheet.image} />
               <Text style={stylesheet.imageCaption}>
-                Рисунок {imageIndex}. {typeof caption === 'string' ? caption : ''}
+                Рисунок {imageIndex}. {content.caption || ''}
               </Text>
             </>
           ) : (
@@ -433,10 +421,10 @@ const ContentBlock: React.FC<{ block: Block; imageIndex?: number }> = ({ block, 
     }
 
     case 'table': {
-      const t = block.content as TableContent;
-      const rows = Number.isFinite(t.rows) ? t.rows : 3;
-      const cols = Number.isFinite(t.cols) ? t.cols : 3;
-      const data = Array.isArray(t.data) ? t.data : [];
+      const content = block.content as TableContent;
+      const rows = content.rows || 3;
+      const cols = content.cols || 3;
+      const data = content.data || [];
 
       return (
         <View style={stylesheet.table}>
@@ -444,15 +432,10 @@ const ContentBlock: React.FC<{ block: Block; imageIndex?: number }> = ({ block, 
             <View key={rowIndex} style={stylesheet.tableRow}>
               {Array.from({ length: cols }).map((_, colIndex) => {
                 const cellIndex = rowIndex * cols + colIndex;
+                const cellStyle = rowIndex === 0 ? stylesheet.tableCellHeader : stylesheet.tableCell;
+                
                 return (
-                  <View
-                    key={colIndex}
-                    style={[
-                      stylesheet.tableCell,
-                      rowIndex === 0 ? stylesheet.tableCellHeader : undefined,
-                      // вместо `rowIndex === 0 && stylesheet.tableCellHeader`
-                    ]}
-                  >
+                  <View key={colIndex} style={cellStyle}>
                     <Text>{data[cellIndex] || ''}</Text>
                   </View>
                 );
@@ -468,8 +451,7 @@ const ContentBlock: React.FC<{ block: Block; imageIndex?: number }> = ({ block, 
   }
 };
 
-// --- DocumentPreviewPDF ---
-
+// --- Главный компонент ---
 interface DocumentPreviewPDFProps {
   blocks: Block[];
   projectName: string;
@@ -483,7 +465,7 @@ const DocumentPreviewPDF: React.FC<DocumentPreviewPDFProps> = ({ blocks }) => {
 
   const getImageIndex = (blockId: string): number => {
     const idx = imageBlocks.findIndex((b) => b.id === blockId);
-    return idx === -1 ? 0 : idx + 1; // избегаем 0, если блок не найден
+    return idx === -1 ? 1 : idx + 1;
   };
 
   if (blocks.length === 0) {
@@ -498,29 +480,26 @@ const DocumentPreviewPDF: React.FC<DocumentPreviewPDFProps> = ({ blocks }) => {
 
   return (
     <Document>
-      {/* Титульный лист */}
       {titleBlock && (
         <Page size="A4" style={stylesheet.page}>
           <TitlePage block={titleBlock} />
           <Text
             style={stylesheet.pageNumber}
-            render={(props: { pageNumber: number }) => `${props.pageNumber}`}
+            render={({ pageNumber }) => `${pageNumber}`}
             fixed
           />
         </Page>
       )}
 
-      {/* Страница содержания */}
       <Page size="A4" style={stylesheet.page}>
         <TableOfContents entries={tocEntries} hasTitlePage={!!titleBlock} />
         <Text
           style={stylesheet.pageNumber}
-          render={(props: { pageNumber: number }) => `${props.pageNumber}`}
+          render={({ pageNumber }) => `${pageNumber}`}
           fixed
         />
       </Page>
 
-      {/* Страницы контента */}
       <Page size="A4" style={stylesheet.page} wrap>
         {contentBlocks.map((block) => (
           <ContentBlock
@@ -531,7 +510,7 @@ const DocumentPreviewPDF: React.FC<DocumentPreviewPDFProps> = ({ blocks }) => {
         ))}
         <Text
           style={stylesheet.pageNumber}
-          render={(props: { pageNumber: number }) => `${props.pageNumber}`}
+          render={({ pageNumber }) => `${pageNumber}`}
           fixed
         />
       </Page>
