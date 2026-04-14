@@ -10,13 +10,6 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
-    // proxy: {
-    //   '/api': {
-    //     target: 'http://192.168.1.3:8000', // IP нашего бэкенда
-    //     changeOrigin: true,
-    //     secure: false,
-    //   },
-    // }
   },
   plugins: [react()],
   resolve: {
