@@ -170,7 +170,7 @@ function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }) {
               <p>Кафедра <span className="inline-block border-b border-black min-w-[250px] text-left px-2">
                 {c.department || "..."}
               </span></p>
-            </div>
+            </div>s
           </div>
 
           <div className="flex flex-col gap-4">
