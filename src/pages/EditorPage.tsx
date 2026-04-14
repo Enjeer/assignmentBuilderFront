@@ -23,7 +23,7 @@ import {
 import {
   ArrowLeft, Plus, Trash2, GripVertical, Type, Heading, Image, Table, FileText, Save,
   ChevronUp, ChevronDown, Lock,
-  LoaderCircle
+  LoaderCircle, Download
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
@@ -242,6 +242,7 @@ export default function EditorPage() {
 const handleDownload = async () => {
     if (isDownloading) return;
     setIsDownloading(true);
+    console.log(isDownloading);
 
     try {
       await downloadProject(project.id, project.name);
@@ -329,7 +330,7 @@ const handleDownload = async () => {
         </Button>
         <Button variant="outline" onClick={handleDownload} size="sm" className="gap-2">
           {!isDownloading ? (
-            <Save className="w-3.5 h-3.5" />
+            <Download className="w-3.5 h-3.5" />
           ) : (
             <LoaderCircle className="w-3.5 h-3.5 animate-spin" />
           )}Скачать
@@ -411,7 +412,7 @@ const handleDownload = async () => {
         <ResizableHandle withHandle />
 
         <ResizablePanel defaultSize={50} minSize={25}>
-          <DocumentPreview blocks={blocks} projectName={projectName}/>
+          <DocumentPreview blocks={blocks} projectName={projectName} imgNum={0}/>
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
