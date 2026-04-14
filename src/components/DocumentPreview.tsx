@@ -277,11 +277,11 @@
 
 import React, {useEffect} from "react";
 import { PDFViewer } from '@react-pdf/renderer';
-import DocumentPreviewPDF from "./PreviewPdfRenderer";
+import DocumentPreviewPDF from "@/components/PreviewPdfRenderer";
 
 export default function DocumentPreview({ blocks, projectName }) {
   useEffect(() => {
-    const worker = new Worker(new URL('./render.js', import.meta.url));
+    const worker = new Worker(new URL('@/components/render.js', import.meta.url));
     worker.postMessage({ blocks, projectName });
 
     worker.onmessage = ({ data }) => {
