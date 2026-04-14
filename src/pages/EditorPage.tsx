@@ -22,7 +22,8 @@ import {
 } from "@/components/ui/select";
 import {
   ArrowLeft, Plus, Trash2, GripVertical, Type, Heading, Image, Table, FileText, Save,
-  ChevronUp, ChevronDown, Lock
+  ChevronUp, ChevronDown, Lock,
+  LoaderCircle
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Textarea } from "@/components/ui/textarea";
@@ -110,7 +111,8 @@ export default function EditorPage() {
 
   const [projectName, setProjectName] = useState(project?.name || "");
   const [addMenuOpen, setAddMenuOpen] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
 
 
@@ -175,8 +177,8 @@ export default function EditorPage() {
   };
 
   const handleSave = async () => {
-    if (saving) return;
-    setSaving(true);
+    if (isSaving) return;
+    setIsSaving(true);
 
     try {
     const updatedBlocks = await Promise.all(blocks.map(async (block) => {
@@ -211,12 +213,12 @@ export default function EditorPage() {
         variant: "destructive" 
       });
     } finally {
-      setSaving(false);
+      setIsSaving(false);
     }
   };
 
   useEffect(() => {
-    if (!isDirty || saving) return;
+    if (!isDirty || isSaving) return;
 
     const timer = setTimeout(async () => {
       const hasPendingImages = blocks.some(
@@ -235,11 +237,11 @@ export default function EditorPage() {
     }, 3000);
 
     return () => clearTimeout(timer);
-  }, [blocks, isDirty, projectId, saving]);
+  }, [blocks, isDirty, projectId, isSaving]);
 
 const handleDownload = async () => {
-    // if (saving) return;
-    // setSaving(true);
+    if (isDownloading) return;
+    setIsDownloading(true);
 
     try {
       await downloadProject(project.id, project.name);
@@ -252,7 +254,7 @@ const handleDownload = async () => {
         variant: "destructive" 
       });
     } finally {
-      setSaving(false);
+      setIsDownloading(false);
     }
   };
 
@@ -318,10 +320,19 @@ const handleDownload = async () => {
           </SelectContent>
         </Select>
         <Button onClick={handleSave} size="sm" className="gap-2">
-          <Save className="w-3.5 h-3.5" /> Сохранить
+          {!isSaving ? (
+            <Save className="w-3.5 h-3.5" />
+          ) : (
+            <LoaderCircle className="w-3.5 h-3.5 animate-spin" />
+          )}
+          Сохранить
         </Button>
         <Button variant="outline" onClick={handleDownload} size="sm" className="gap-2">
-          <Save className="w-3.5 h-3.5" /> Скачать
+          {!isDownloading ? (
+            <Save className="w-3.5 h-3.5" />
+          ) : (
+            <LoaderCircle className="w-3.5 h-3.5 animate-spin" />
+          )}Скачать
         </Button>
       </header>
 
@@ -400,7 +411,7 @@ const handleDownload = async () => {
         <ResizableHandle withHandle />
 
         <ResizablePanel defaultSize={50} minSize={25}>
-          <DocumentPreview blocks={blocks} projectName={projectName} imgNum={0}/>
+          <DocumentPreview blocks={blocks} projectName={projectName}/>
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
