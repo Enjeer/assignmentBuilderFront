@@ -333,7 +333,7 @@ const handleDownload = async () => {
             <Download className="w-3.5 h-3.5" />
           ) : (
             <LoaderCircle className="w-3.5 h-3.5 animate-spin" />
-          )}Скачать
+          )}Скачать12
         </Button>
       </header>
 
