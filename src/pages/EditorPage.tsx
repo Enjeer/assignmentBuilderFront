@@ -297,7 +297,7 @@ const handleDownload = async () => {
   const enrichedBlocks = getBlocksWithMetadata(sortableBlocks);
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-full flex flex-col">
       {/* Toolbar */}
       <header className="border-b border-border bg-card px-4 py-3 flex items-center gap-3 shrink-0">
         <Button variant="ghost" size="icon" onClick={() => navigate("/projects")}>
