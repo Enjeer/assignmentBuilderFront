@@ -127,10 +127,11 @@ export default function EditorPage() {
     if (addMenuOpen && menuContainerRef.current) {
       menuContainerRef.current.scrollIntoView({ 
         behavior: 'smooth', 
-        block: 'end'
+        block: 'nearest',
+        inline: 'start'
       });
     }
-  }, [addMenuOpen]); 
+  }, [addMenuOpen]);
 
   const saveBlocks = useCallback((newBlocks: Block[]) => {
     setBlocks(newBlocks);
