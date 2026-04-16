@@ -9,8 +9,8 @@ interface DocumentPreviewProps {
 
 const PAGE_WIDTH_MM = 210;
 const PAGE_HEIGHT_MM = 297;
-const PADDING_TOP_MM = 20;
-const PADDING_BOTTOM_MM = 75;
+const PADDING_TOP_MM = 75.591;
+const PADDING_BOTTOM_MM = 75.591;
 const CONTENT_MAX_HEIGHT_PX = (PAGE_HEIGHT_MM - PADDING_TOP_MM - PADDING_BOTTOM_MM) * 3.78;
 
 const PAGE_STYLE = "bg-white text-black shadow-lg w-[210mm] px-[25mm] py-[20mm] text-[12pt] leading-[1.5] relative overflow-hidden flex flex-col shrink-0 mb-8";
@@ -213,7 +213,7 @@ export default function DocumentPreview({ blocks }: DocumentPreviewProps) {
               )}
 
               <div className={PAGE_STYLE} style={FONT_STYLE}>
-                <h2 className="text-[16pt] font-bold text-center mb-8 uppercase">Содержание</h2>
+                <h2 className="text-[16pt] font-bold text-center mb-8 uppercase preview">Содержание</h2>
                 <div className="space-y-1">
                   {tocEntries.map((entry, i) => (
                     <div key={i} className="flex items-baseline gap-1" style={{ paddingLeft: `${(entry.level - 1) * 1.25}cm` }}>
@@ -267,14 +267,14 @@ function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }) {
               <p>Кафедра <span className="border-b border-black px-4">{c.department || "________________"}</span></p>
             </div>
           </div>
-          <div className="space-y-6">
-            <h1 className="text-[18pt] font-bold tracking-widest">КУРСОВАЯ РАБОТА</h1>
-            <div className="text-[14pt] space-y-2">
-              <p>по дисциплине: <span className="font-medium">{c.subject || "..."}</span></p>
-              <p>на тему: <span className="font-bold underline">{c.title || "..."}</span></p>
+          <div className="space-y-6 flex-col items-center">
+            <h1 className="text-[18pt] font-bold tracking-widest preview">КУРСОВАЯ РАБОТА</h1>
+            <div className="text-[14pt] space-y-2 w-fit">
+              <p>по дисциплине: <span className="font-medium w-fit">{c.subject || "..."}</span></p>
+              <p>на тему: <span className="font-medium w-fit">{c.title || "..."}</span></p>
             </div>
           </div>
-          <div className="self-end w-2/3 text-left text-[11pt] space-y-4">
+          <div className="self-end w-full text-left text-[11pt] space-y-4">
             <div className="grid grid-cols-[1fr_auto] gap-x-4">
               <span>Студент {c.group}</span> <span className="font-bold">{c.studentName}</span>
               <span>Руководитель</span> <span className="font-bold">{c.teacherName}</span>
@@ -290,8 +290,8 @@ function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }) {
       const level = block.content.level || 1;
       const Tag = `h${level}` as any;
       const styles = level === 1 
-        ? "text-[16pt] font-bold mt-2 mb-4 text-center uppercase break-words" 
-        : "text-[14pt] font-bold mt-6 mb-3 break-words";
+        ? "text-[16pt] font-bold mt-2 mb-4 text-center uppercase break-words preview" 
+        : "text-[14pt] font-bold mt-6 mb-3 break-words preview";
       return <Tag className={styles}>{block.content.text}</Tag>;
     }
     case "text":
