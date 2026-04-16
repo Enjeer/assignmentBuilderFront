@@ -123,10 +123,9 @@ export default function EditorPage() {
 
   useEffect(() => {
     if (addMenuOpen && menuContainerRef.current) {
-      // Прокручиваем так, чтобы кнопка и открывшееся меню стали видимы
       menuContainerRef.current.scrollIntoView({ 
         behavior: 'smooth', 
-        block: 'end' // Прокрутит так, чтобы нижний край элемента был внизу экрана
+        block: 'end'
       });
     }
   }, [addMenuOpen]); 
