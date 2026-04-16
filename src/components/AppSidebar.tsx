@@ -20,7 +20,7 @@ export default function AppSidebar() {
   const location = useLocation();
 
   return (
-    <aside className="w-80 h-screen flex flex-col bg-sidebar border-r border-sidebar-border shrink-0">
+    <aside className="w-80 h-full flex flex-col bg-sidebar border-r border-sidebar-border shrink-0">
       {/* Logo */}
       <div className="p-5 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
