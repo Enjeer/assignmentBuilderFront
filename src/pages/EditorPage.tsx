@@ -412,7 +412,7 @@ const handleDownload = async () => {
         <ResizableHandle withHandle />
 
         <ResizablePanel defaultSize={50} minSize={25}>
-          <DocumentPreview blocks={blocks} projectName={projectName} imgNum={0}/>
+          <DocumentPreview blocks={blocks} projectName={projectName}/>
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>
@@ -589,7 +589,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (c: Record<s
             { key: "subject", label: "Наименование предмета"},
             { key: "title", label: "Тема работы" },
             { key: "studentName", label: "ФИО студента" },
-            { key: "faculty", label: "Факультет"},
+            { key: "faculty", label: "Факультет", placeholder: "н.п. ФЦЭ"},
             { key: "studying year", label: "Курс" },
             { key: "group", label: "Группа" },
             { key: "teacherName", label: "ФИО руководителя" },
@@ -603,6 +603,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (c: Record<s
                 value={block.content[f.key] || ""}
                 onChange={e => onChange({ ...block.content, [f.key]: e.target.value })}
                 className="h-8 text-sm"
+                placeholder={f.placeholder ? f.placeholder : ''}
               />
             </div>
           ))}
