@@ -125,10 +125,9 @@ export default function EditorPage() {
 
   useEffect(() => {
     if (addMenuOpen && menuContainerRef.current) {
-      // Прокручиваем так, чтобы кнопка и открывшееся меню стали видимы
       menuContainerRef.current.scrollIntoView({ 
         behavior: 'smooth', 
-        block: 'end' // Прокрутит так, чтобы нижний край элемента был внизу экрана
+        block: 'end'
       });
     }
   }, [addMenuOpen]); 
@@ -590,7 +589,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (c: Record<s
             { key: "title", label: "Тема работы" },
             { key: "studentName", label: "ФИО студента" },
             { key: "faculty", label: "Факультет", placeholder: "н.п. ФЦЭ"},
-            { key: "studying year", label: "Курс" },
+            { key: "studying_year", label: "Курс" },
             { key: "group", label: "Группа" },
             { key: "teacherName", label: "ФИО руководителя" },
             { key: "jobTitle", label: "Должность руководителя"},

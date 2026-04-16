@@ -253,6 +253,11 @@ function PageNumber({ num }: { num: number }) {
 }
 
 function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }) {
+
+  const jobTitleSplit = (title) => {
+    return title.split(",");
+  }
+
   switch (block.type) {
     case "title-page": {
       const c = block.content;
@@ -267,7 +272,7 @@ function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }) {
               <p>Кафедра <span className="border-b border-black px-4">{c.department || "________________"}</span></p>
             </div>
           </div>
-          <div className="space-y-6 flex-col items-center">
+          <div className="space-y-6 flex flex-col items-center">
             <h1 className="text-[18pt] font-bold tracking-widest preview">КУРСОВАЯ РАБОТА</h1>
             <div className="text-[14pt] space-y-2 w-fit">
               <p>по дисциплине: <span className="font-medium w-fit">{c.subject || "..."}</span></p>
@@ -275,9 +280,46 @@ function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }) {
             </div>
           </div>
           <div className="self-end w-full text-left text-[11pt] space-y-4">
-            <div className="grid grid-cols-[1fr_auto] gap-x-4">
-              <span>Студент {c.group}</span> <span className="font-bold">{c.studentName}</span>
-              <span>Руководитель</span> <span className="font-bold">{c.teacherName}</span>
+            <div className="flex flex-col gap-y-12 w-full max-w-4xl text-[14px] font-serif">
+              <div className="grid grid-cols-[2fr_1fr_1.5fr] items-end gap-x-4">
+                <div className="flex flex-col leading-tight">
+                  <span className="mb-1">Студент</span>
+                  <span>
+                    {c.faculty}, {c.studying_year}-й курс, {c.group}
+                  </span>
+                </div>
+
+                <div className="flex flex-col items-center text-[10px] leading-[1.1] pb-1">
+                  <span className="border-t border-black w-full text-center mt-1">(подпись)</span>
+                  <span className="mt-2 border-t border-black w-full text-center">(дата)</span>
+                </div>
+
+                <div className="font-bold text-right pb-1">
+                  {c.studentName}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-[2fr_1fr_1.5fr] items-end gap-x-4">
+                <div className="flex flex-col leading-tight">
+                  <span className="mb-1">Руководитель</span>
+                  <span>{jobTitleSplit(c.jobTitle)[0]}</span>
+                  {jobTitleSplit(c.jobTitle)[1] && (
+                    <span>{jobTitleSplit(c.jobTitle)[1]}</span>
+                  )}
+                </div>
+
+                <div className="flex flex-col items-center text-[10px] leading-[1.1] pb-1">
+                  <div className="flex justify-between w-full gap-2 border-t border-black mt-1">
+                    <span className="flex-1 text-center">(подпись)</span>
+                    <span className="flex-1 text-center">(оценка)</span>
+                  </div>
+                  <span className="mt-2 border-t border-black w-full text-center">(дата)</span>
+                </div>
+
+                <div className="font-bold text-right pb-1">
+                  {c.teacherName}
+                </div>
+              </div>
             </div>
           </div>
           <div className="text-[12pt] uppercase mt-4">
