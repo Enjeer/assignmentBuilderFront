@@ -10,15 +10,10 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
-    // proxy: {
-    //   '/api': {
-    //     target: 'http://192.168.1.3:8000', // IP нашего бэкенда
-    //     changeOrigin: true,
-    //     secure: false,
-    //   },
-    // }
   },
-  plugins: [react()],
+  plugins: [
+    react(),
+  ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -31,5 +26,27 @@ export default defineConfig(({ mode }) => ({
       "@tanstack/react-query",
       "@tanstack/query-core",
     ],
+  },
+  worker: {
+    format: 'es',
+    plugins: () => [react()],
+  },
+  optimizeDeps: {
+    include: [
+      '@react-pdf/renderer',
+      'react',
+      'react-dom',
+    ],
+    exclude: ['@react-pdf/renderer'],
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-pdf': ['@react-pdf/renderer'],
+        },
+      },
+    },
+    target: 'es2020',
   },
 }));
