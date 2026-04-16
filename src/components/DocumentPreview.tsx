@@ -186,19 +186,28 @@ export default function DocumentPreview({ blocks }: DocumentPreviewProps) {
   const allImages = blocks.filter(b => b.type === "image");
 
   return (
-    <div className="h-screen flex flex-col bg-muted/30" ref={containerRef}>
+    <div className="h-full flex flex-col bg-muted/30 relative overflow-hidden" ref={containerRef}>
+      {/* calculation element */}
       <div 
         ref={measureRef} 
-        className="absolute opacity-0 pointer-events-none" 
-        style={{ width: '160mm', ...FONT_STYLE }} 
+        className="absolute pointer-events-none" 
+        style={{ 
+          width: '160mm', 
+          ...FONT_STYLE, 
+          top: '-9999px', 
+          left: '0',
+          visibility: 'hidden',
+          whiteSpace: 'pre-wrap', 
+          wordBreak: 'break-word'
+        }} 
       />
 
       <div className="px-4 py-2 border-b border-border bg-card shrink-0 flex justify-between items-center">
         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Предпросмотр</span>
-        {isCalculating && <span className="text-[10px] animate-pulse">Оптимизация страниц...</span>}
+        {isCalculating && <span className="text-[10px] animate-pulse text-primary">Оптимизация страниц...</span>}
       </div>
 
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1 min-h-0">
         <div className="p-6 flex flex-col items-center gap-2" style={{ zoom: zoomLevel }}>
           {blocks.length === 0 ? (
             <div className={PAGE_STYLE} style={FONT_STYLE}>
