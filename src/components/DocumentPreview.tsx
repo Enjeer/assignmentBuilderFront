@@ -10,7 +10,7 @@ interface DocumentPreviewProps {
 const PAGE_WIDTH_MM = 210;
 const PAGE_HEIGHT_MM = 297;
 const PADDING_TOP_MM = 45;
-const PADDING_BOTTOM_MM = 45;
+const PADDING_BOTTOM_MM = 0;
 const CONTENT_MAX_HEIGHT_PX = (PAGE_HEIGHT_MM - PADDING_TOP_MM - PADDING_BOTTOM_MM) * 3.78;
 
 const PAGE_STYLE = "bg-white text-black shadow-lg w-[210mm] px-[25mm] py-[20mm] text-[12pt] leading-[1.5] relative overflow-hidden flex flex-col shrink-0 mb-8";
