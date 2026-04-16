@@ -186,7 +186,7 @@ export default function DocumentPreview({ blocks }: DocumentPreviewProps) {
   const allImages = blocks.filter(b => b.type === "image");
 
   return (
-    <div className="h-full flex flex-col bg-muted/30" ref={containerRef}>
+    <div className="h-screen flex flex-col bg-muted/30" ref={containerRef}>
       <div 
         ref={measureRef} 
         className="absolute opacity-0 pointer-events-none" 
