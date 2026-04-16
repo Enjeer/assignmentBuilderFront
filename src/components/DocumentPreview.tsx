@@ -189,7 +189,7 @@ export default function DocumentPreview({ blocks }: DocumentPreviewProps) {
     <div className="h-screen flex flex-col bg-muted/30" ref={containerRef}>
       <div 
         ref={measureRef} 
-        className="absolute opacity-0 pointer-events-none hidden" 
+        className="absolute opacity-0 pointer-events-none" 
         style={{ width: '160mm', ...FONT_STYLE }} 
       />
 
