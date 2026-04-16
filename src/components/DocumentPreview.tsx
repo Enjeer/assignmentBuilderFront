@@ -281,6 +281,7 @@ function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }) {
           </div>
           <div className="self-end w-full text-left text-[11pt] space-y-4">
             <div className="flex flex-col gap-y-12 w-full max-w-4xl text-[14px] font-serif">
+              
               <div className="grid grid-cols-[2fr_1fr_1.5fr] items-end gap-x-4">
                 <div className="flex flex-col leading-tight">
                   <span className="mb-1">Студент</span>
@@ -289,12 +290,12 @@ function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }) {
                   </span>
                 </div>
 
-                <div className="flex flex-col items-center text-[10px] leading-[1.1] pb-1">
-                  <span className="border-t border-black w-full text-center mt-1">(подпись)</span>
-                  <span className="mt-2 border-t border-black w-full text-center">(дата)</span>
+                <div className="relative top-4 flex flex-col items-center text-[10px] leading-tight">
+                  <span className="w-full text-center">(подпись)</span>
+                  <span className="w-full text-center">(дата)</span>
                 </div>
 
-                <div className="font-bold text-right pb-1">
+                <div className="font-bold text-right leading-tight">
                   {c.studentName}
                 </div>
               </div>
@@ -308,18 +309,19 @@ function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }) {
                   )}
                 </div>
 
-                <div className="flex flex-col items-center text-[10px] leading-[1.1] pb-1">
-                  <div className="flex justify-between w-full gap-2 border-t border-black mt-1">
+                <div className="relative top-4 flex flex-col items-center text-[10px] leading-tight">
+                  <div className="flex justify-between w-full gap-2">
                     <span className="flex-1 text-center">(подпись)</span>
                     <span className="flex-1 text-center">(оценка)</span>
                   </div>
-                  <span className="mt-2 border-t border-black w-full text-center">(дата)</span>
+                  <span className="w-full text-center">(дата)</span>
                 </div>
 
-                <div className="font-bold text-right pb-1">
+                <div className="font-bold text-right leading-tight">
                   {c.teacherName}
                 </div>
               </div>
+
             </div>
           </div>
           <div className="text-[12pt] uppercase mt-4">
