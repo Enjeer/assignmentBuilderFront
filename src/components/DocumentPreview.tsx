@@ -381,19 +381,38 @@ function PreviewBlock({ block, imgNum, projectType}: { block: Block; imgNum: num
       const { rows = 1, cols = 1, data = [] } = block.content;
       return (
         <div className="my-4">
-          <table className="w-full border-collapse border border-black table-fixed text-[11pt]">
-            <tbody>
-              {Array.from({ length: rows }).map((_, r) => (
-                <tr key={r}>
-                  {Array.from({ length: cols }).map((_, c) => (
-                    <td key={c} className="border border-black px-2 py-1 break-words overflow-hidden">
-                      {data[r * cols + c] || ""}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {block.content ? (
+            <figure className="inline-block">
+            <table className="w-full border-collapse border border-black table-fixed text-[11pt]">
+              <tbody>
+                {Array.from({ length: rows }).map((_, r) => (
+                  <tr key={r}>
+                    {Array.from({ length: cols }).map((_, c) => (
+                      <td key={c} className="border border-black px-2 py-1 break-words overflow-hidden">
+                        {data[r * cols + c] || ""}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+              <figcaption className="text-[11pt] italic mt-2">Таблица "номер" — {block.content.caption}</figcaption>
+            </figure>
+          ): (
+            <table className="w-full border-collapse border border-black table-fixed text-[11pt]">
+              <tbody>
+                {Array.from({ length: rows }).map((_, r) => (
+                  <tr key={r}>
+                    {Array.from({ length: cols }).map((_, c) => (
+                      <td key={c} className="border border-black px-2 py-1 break-words overflow-hidden">
+                        {data[r * cols + c] || ""}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       );
     }
