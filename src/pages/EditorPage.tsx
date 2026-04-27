@@ -296,6 +296,8 @@ const handleDownload = async () => {
 
   const enrichedBlocks = getBlocksWithMetadata(sortableBlocks);
 
+  console.log(project.type);
+
   return (
     <div className="h-full flex flex-col">
       {/* Toolbar */}
