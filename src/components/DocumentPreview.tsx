@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, useLayoutEffect } from "react";
 interface DocumentPreviewProps {
   blocks: Block[];
   projectName: string;
+  projectType: string;
 }
 
 const PAGE_WIDTH_MM = 210;
@@ -23,7 +24,6 @@ export default function DocumentPreview({ blocks }: DocumentPreviewProps) {
   const [paginatedPages, setPaginatedPages] = useState<Block[][]>([]);
   const [tocEntries, setTocEntries] = useState<{text: string; level: number; page: number}[]>([]);
   const [isCalculating, setIsCalculating] = useState(true);
-  
   const containerRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
   const [zoomLevel, setZoomLevel] = useState(1);
@@ -261,7 +261,7 @@ function PageNumber({ num }: { num: number }) {
   return <span className="absolute bottom-[10mm] left-0 right-0 text-center text-[11pt]">{num}</span>;
 }
 
-function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }) {
+function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }, {projectType}: DocumentPreviewProps) {
 
   const jobTitleSplit = (title) => {
     return title.split(",");
@@ -282,7 +282,7 @@ function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }) {
             </div>
           </div>
           <div className="space-y-6 flex flex-col items-center">
-            <h1 className="text-[18pt] font-bold tracking-widest preview">{c.type}</h1>
+            <h1 className="text-[18pt] font-bold tracking-widest preview">{projectType}</h1>
             <div className="text-[14pt] space-y-2 w-fit">
               <p>по дисциплине: <span className="font-medium w-fit">{c.subject || "..."}</span></p>
               <p>на тему: <span className="font-medium w-fit">{c.title || "..."}</span></p>
