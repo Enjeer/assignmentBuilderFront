@@ -282,7 +282,7 @@ function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }) {
             </div>
           </div>
           <div className="space-y-6 flex flex-col items-center">
-            <h1 className="text-[18pt] font-bold tracking-widest preview">КУРСОВАЯ РАБОТА</h1>
+            <h1 className="text-[18pt] font-bold tracking-widest preview">{c.type}</h1>
             <div className="text-[14pt] space-y-2 w-fit">
               <p>по дисциплине: <span className="font-medium w-fit">{c.subject || "..."}</span></p>
               <p>на тему: <span className="font-medium w-fit">{c.title || "..."}</span></p>

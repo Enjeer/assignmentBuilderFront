@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Search, Trash2, FolderOpen } from "lucide-react";
+import { Plus, Search, Trash2, FolderOpen, Cross} from "lucide-react";
 
 const STATUS_CONFIG: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive" }> = {
   active: { label: "Активный", variant: "outline" },
@@ -101,6 +101,8 @@ export default function ProjectsPage() {
                 </Select>
               </div>
               <Button onClick={handleCreate} className="w-full">Создать</Button>
+              <hr />
+              <Button className="w-full" disabled><Cross className="w-4 h-4 text-muted-foreground"/>Ассистент</Button>
             </div>
           </DialogContent>
         </Dialog>

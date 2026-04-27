@@ -670,6 +670,15 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (c: Record<s
               </tbody>
             </table>
           </div>
+          <div key="table" className="grid grid-cols-[140px_1fr] items-center gap-2">
+              <label className="text-xs text-muted-foreground font-medium">Подпись к таблице</label>
+              <Input
+                value={block.content["table"] || ""}
+                onChange={e => onChange({ ...block.content, "table": e.target.value })}
+                className="h-8 text-sm"
+                placeholder="Табл 1. Источник: собственная разработка"
+              />
+            </div>
         </div>
       );
     }

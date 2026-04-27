@@ -153,7 +153,7 @@ export default function DashboardPage() {
                     </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground line-clamp-2 mb-3 flex-1">{p.description}</p>
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground mt-auto">
                     <span>{getTypeLabel(p.type)}</span>
                     <span>Изменен: {normalizeDate(p.updatedAt)}</span>
                   </div>
@@ -162,6 +162,11 @@ export default function DashboardPage() {
             );
           })}
         </div>
+      </div>
+
+      {/* Graphs */}
+      <div>
+        
       </div>
     </div>
   );
