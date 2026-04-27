@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, useLayoutEffect } from "react";
 interface DocumentPreviewProps {
   blocks: Block[];
   projectName: string;
+  projectType: string;
 }
 
 const PAGE_WIDTH_MM = 210;
@@ -19,11 +20,10 @@ const FONT_STYLE = {
   height: `${PAGE_HEIGHT_MM}mm`
 };
 
-export default function DocumentPreview({ blocks }: DocumentPreviewProps) {
+export default function DocumentPreview({ blocks, projectType }: DocumentPreviewProps) {
   const [paginatedPages, setPaginatedPages] = useState<Block[][]>([]);
   const [tocEntries, setTocEntries] = useState<{text: string; level: number; page: number}[]>([]);
   const [isCalculating, setIsCalculating] = useState(true);
-  
   const containerRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
   const [zoomLevel, setZoomLevel] = useState(1);
@@ -217,7 +217,7 @@ export default function DocumentPreview({ blocks }: DocumentPreviewProps) {
             <>
               {titleBlock && (
                 <div className={PAGE_STYLE} style={FONT_STYLE}>
-                  <PreviewBlock block={titleBlock} imgNum={0} />
+                  <PreviewBlock block={titleBlock} imgNum={0} projectType={projectType}/>
                 </div>
               )}
 
@@ -242,7 +242,8 @@ export default function DocumentPreview({ blocks }: DocumentPreviewProps) {
                       <PreviewBlock 
                         key={`${pageIdx}-${bIdx}`} 
                         block={block} 
-                        imgNum={block.type === "image" ? allImages.findIndex(img => img.id === block.id) + 1 : 0} 
+                        imgNum={block.type === "image" ? allImages.findIndex(img => img.id === block.id) + 1 : 0}
+                        projectType={projectType} 
                       />
                     ))}
                   </div>
@@ -261,10 +262,18 @@ function PageNumber({ num }: { num: number }) {
   return <span className="absolute bottom-[10mm] left-0 right-0 text-center text-[11pt]">{num}</span>;
 }
 
-function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }) {
+function PreviewBlock({ block, imgNum, projectType}: { block: Block; imgNum: number, projectType: string }) {
 
   const jobTitleSplit = (title) => {
     return title.split(",");
+  }
+
+
+  const types = {
+    "course" : 'Курсовая работа',
+    "essay" : 'Эссе',
+    "lab" : 'Лабораторная работа',
+    "diplom" : 'Дипломная работа',
   }
 
   switch (block.type) {
@@ -282,7 +291,7 @@ function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }) {
             </div>
           </div>
           <div className="space-y-6 flex flex-col items-center">
-            <h1 className="text-[18pt] font-bold tracking-widest preview">{c.type}</h1>
+            <h1 className="text-[18pt] font-bold tracking-widest preview">{types[projectType]}</h1>
             <div className="text-[14pt] space-y-2 w-fit">
               <p>по дисциплине: <span className="font-medium w-fit">{c.subject || "..."}</span></p>
               <p>на тему: <span className="font-medium w-fit">{c.title || "..."}</span></p>
@@ -370,19 +379,38 @@ function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }) {
       const { rows = 1, cols = 1, data = [] } = block.content;
       return (
         <div className="my-4">
-          <table className="w-full border-collapse border border-black table-fixed text-[11pt]">
-            <tbody>
-              {Array.from({ length: rows }).map((_, r) => (
-                <tr key={r}>
-                  {Array.from({ length: cols }).map((_, c) => (
-                    <td key={c} className="border border-black px-2 py-1 break-words overflow-hidden">
-                      {data[r * cols + c] || ""}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {block.content ? (
+            <figure className="inline-block">
+            <table className="w-full border-collapse border border-black table-fixed text-[11pt]">
+              <tbody>
+                {Array.from({ length: rows }).map((_, r) => (
+                  <tr key={r}>
+                    {Array.from({ length: cols }).map((_, c) => (
+                      <td key={c} className="border border-black px-2 py-1 break-words overflow-hidden">
+                        {data[r * cols + c] || ""}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+              <figcaption className="text-[11pt] italic mt-2">Таблица "номер" — {block.content["table"]}</figcaption>
+            </figure>
+          ): (
+            <table className="w-full border-collapse border border-black table-fixed text-[11pt]">
+              <tbody>
+                {Array.from({ length: rows }).map((_, r) => (
+                  <tr key={r}>
+                    {Array.from({ length: cols }).map((_, c) => (
+                      <td key={c} className="border border-black px-2 py-1 break-words overflow-hidden">
+                        {data[r * cols + c] || ""}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
       );
     }

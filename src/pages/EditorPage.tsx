@@ -410,9 +410,9 @@ const handleDownload = async () => {
           </ResizablePanel>
 
           <ResizableHandle withHandle />
-
+          
           <ResizablePanel defaultSize={50} minSize={25}>
-            <DocumentPreview blocks={blocks} projectName={projectName}/>
+            <DocumentPreview blocks={blocks} projectName={projectName} projectType={project.type}/>
           </ResizablePanel>
         </ResizablePanelGroup>
     </div>
