@@ -267,6 +267,8 @@ function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }, {proj
     return title.split(",");
   }
 
+  console.log(projectType);
+
   switch (block.type) {
     case "title-page": {
       const c = block.content;
