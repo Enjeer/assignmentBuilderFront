@@ -275,8 +275,6 @@ function PreviewBlock({ block, imgNum, projectType}: { block: Block; imgNum: num
     "lab" : 'Лабораторная работа',
     "diplom" : 'Дипломная работа',
   }
-  console.log(projectType, ": type");
-  console.log(types[projectType], ": type after assigning");
 
   switch (block.type) {
     case "title-page": {
@@ -396,7 +394,7 @@ function PreviewBlock({ block, imgNum, projectType}: { block: Block; imgNum: num
                 ))}
               </tbody>
             </table>
-              <figcaption className="text-[11pt] italic mt-2">Таблица "номер" — {block.content.caption}</figcaption>
+              <figcaption className="text-[11pt] italic mt-2">Таблица "номер" — {block.content["table"]}</figcaption>
             </figure>
           ): (
             <table className="w-full border-collapse border border-black table-fixed text-[11pt]">
