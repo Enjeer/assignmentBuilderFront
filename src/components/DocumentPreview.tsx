@@ -268,6 +268,13 @@ function PreviewBlock({ block, imgNum, projectType}: { block: Block; imgNum: num
     return title.split(",");
   }
 
+  const types = [
+    {"course" : 'Курсовая работа'},
+    {"essay" : 'Эссе'},
+    {"lab" : 'Лабораторная работа'},
+    {"diplom" : 'Дипломная работа'},
+  ]
+
   switch (block.type) {
     case "title-page": {
       const c = block.content;
@@ -283,7 +290,7 @@ function PreviewBlock({ block, imgNum, projectType}: { block: Block; imgNum: num
             </div>
           </div>
           <div className="space-y-6 flex flex-col items-center">
-            <h1 className="text-[18pt] font-bold tracking-widest preview">{projectType}</h1>
+            <h1 className="text-[18pt] font-bold tracking-widest preview">{types[projectType]}</h1>
             <div className="text-[14pt] space-y-2 w-fit">
               <p>по дисциплине: <span className="font-medium w-fit">{c.subject || "..."}</span></p>
               <p>на тему: <span className="font-medium w-fit">{c.title || "..."}</span></p>
