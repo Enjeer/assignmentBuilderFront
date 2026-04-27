@@ -268,12 +268,15 @@ function PreviewBlock({ block, imgNum, projectType}: { block: Block; imgNum: num
     return title.split(",");
   }
 
-  const types = [
-    {"course" : 'Курсовая работа'},
-    {"essay" : 'Эссе'},
-    {"lab" : 'Лабораторная работа'},
-    {"diplom" : 'Дипломная работа'},
-  ]
+
+  const types = {
+    "course" : 'Курсовая работа',
+    "essay" : 'Эссе',
+    "lab" : 'Лабораторная работа',
+    "diplom" : 'Дипломная работа',
+  }
+  console.log(projectType, ": type");
+  console.log(types[projectType], ": type after assigning");
 
   switch (block.type) {
     case "title-page": {
