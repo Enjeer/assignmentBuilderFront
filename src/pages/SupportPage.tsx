@@ -125,7 +125,7 @@ export default function SupportPage() {
             <p className="text-sm">Отсавьте заяку или измените фильтры</p> */}
             <p className="text-lg font-medium">Раздел в разработке</p>
             <p className="text-sm">В скором времени он станет доступен</p>
-            <p className="text-sm">Почта для контакта: <a href="mailto:aor.tech.2026@gmail.com">aor.tech.2026@gmail.com</a></p>
+            <p className="text-sm">Почта для контакта: <a className="hover:text-secondary" href="mailto:aor.tech.2026@gmail.com">aor.tech.2026@gmail.com</a></p>
             </div>
         ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
