@@ -296,8 +296,6 @@ const handleDownload = async () => {
 
   const enrichedBlocks = getBlocksWithMetadata(sortableBlocks);
 
-  console.log(project.type);
-
   return (
     <div className="h-full flex flex-col">
       {/* Toolbar */}
@@ -412,7 +410,7 @@ const handleDownload = async () => {
           </ResizablePanel>
 
           <ResizableHandle withHandle />
-
+          
           <ResizablePanel defaultSize={50} minSize={25}>
             <DocumentPreview blocks={blocks} projectName={projectName} projectType={project.type}/>
           </ResizablePanel>

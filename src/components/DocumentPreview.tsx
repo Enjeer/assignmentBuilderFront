@@ -20,7 +20,7 @@ const FONT_STYLE = {
   height: `${PAGE_HEIGHT_MM}mm`
 };
 
-export default function DocumentPreview({ blocks }: DocumentPreviewProps) {
+export default function DocumentPreview({ blocks, projectType }: DocumentPreviewProps) {
   const [paginatedPages, setPaginatedPages] = useState<Block[][]>([]);
   const [tocEntries, setTocEntries] = useState<{text: string; level: number; page: number}[]>([]);
   const [isCalculating, setIsCalculating] = useState(true);
@@ -217,7 +217,7 @@ export default function DocumentPreview({ blocks }: DocumentPreviewProps) {
             <>
               {titleBlock && (
                 <div className={PAGE_STYLE} style={FONT_STYLE}>
-                  <PreviewBlock block={titleBlock} imgNum={0} />
+                  <PreviewBlock block={titleBlock} imgNum={0} projectType={projectType}/>
                 </div>
               )}
 
@@ -242,7 +242,8 @@ export default function DocumentPreview({ blocks }: DocumentPreviewProps) {
                       <PreviewBlock 
                         key={`${pageIdx}-${bIdx}`} 
                         block={block} 
-                        imgNum={block.type === "image" ? allImages.findIndex(img => img.id === block.id) + 1 : 0} 
+                        imgNum={block.type === "image" ? allImages.findIndex(img => img.id === block.id) + 1 : 0}
+                        projectType={projectType} 
                       />
                     ))}
                   </div>
@@ -261,13 +262,11 @@ function PageNumber({ num }: { num: number }) {
   return <span className="absolute bottom-[10mm] left-0 right-0 text-center text-[11pt]">{num}</span>;
 }
 
-function PreviewBlock({ block, imgNum }: { block: Block; imgNum: number }, {projectType}: DocumentPreviewProps) {
+function PreviewBlock({ block, imgNum, projectType}: { block: Block; imgNum: number, projectType: string }) {
 
   const jobTitleSplit = (title) => {
     return title.split(",");
   }
-
-  console.log(projectType);
 
   switch (block.type) {
     case "title-page": {
