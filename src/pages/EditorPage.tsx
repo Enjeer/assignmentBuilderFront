@@ -349,7 +349,7 @@ const handleDownload = async () => {
               <div className="max-w-3xl mx-auto py-8 px-4 space-y-3">
                 {/* Title page block — always first, not draggable */}
                 {titleBlock && (
-                  <Card className="border-border border-primary/20">
+                  <Card className="border-border border-primary/20 overflow-hidden">
                     <CardContent className="p-0">
                       <div className="flex items-center gap-1 px-3 py-2 border-b border-border bg-primary/5">
                         <Lock className="w-3.5 h-3.5 text-primary/50" />
