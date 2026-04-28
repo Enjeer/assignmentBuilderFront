@@ -630,7 +630,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (c: Record<s
               <label className="text-xs text-muted-foreground font-medium">Подпись к таблице</label>
               <Input
                 value={block.content["naming"] || ""}
-                onChange={e => onChange({ ...block.content, "table": e.target.value })}
+                onChange={e => onChange({ ...block.content, "naming": e.target.value })}
                 className="h-8 text-sm"
                 placeholder="Название таблицы"
               />
@@ -639,7 +639,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (c: Record<s
               <label className="text-xs text-muted-foreground font-medium">Подпись к таблице</label>
               <Input
                 value={block.content["source"] || "Примечание - Источник:"}
-                onChange={e => onChange({ ...block.content, "table": e.target.value })}
+                onChange={e => onChange({ ...block.content, "source": e.target.value })}
                 className="h-8 text-sm"
                 placeholder="Н.п. Примечание - Источник: собственная разработка"
               />
