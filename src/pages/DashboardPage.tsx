@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Project } from "@/lib/projects-context";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { FileText, Clock, CheckCircle, AlertCircle, Plus, ArrowRight } from "lucide-react";
+import { FileText, Clock, CheckCircle, AlertCircle, Plus, ArrowRight, Cross, LoaderCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 const STATUS_CONFIG: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive" }> = {
@@ -27,6 +27,7 @@ export default function DashboardPage() {
   const [newName, setNewName] = useState("");
   const [newDesc, setNewDesc] = useState("");
   const [newType, setNewType] = useState<Project["type"]>("course");
+  const [isCreatingProject, setIsCreatingProject] = useState(false);
 
   const stats = {
     total: projects.length,
@@ -59,10 +60,27 @@ export default function DashboardPage() {
 
   const handleCreate = async () => {
     if (!newName.trim()) return;
-    const p = await createProject({ name: newName, description: newDesc, type: newType, status: "active" });
-    setCreateDialogOpen(false);
-    setNewName(""); setNewDesc("");
-    navigate(`/projects/${p.id}`);
+    
+    setIsCreatingProject(true);
+
+    try {
+      const p = await createProject({ 
+        name: newName, 
+        description: newDesc, 
+        type: newType, 
+        status: "active" 
+      });
+      
+      setCreateDialogOpen(false);
+      setNewName(""); 
+      setNewDesc("");
+      
+      setIsCreatingProject(false);
+      navigate(`/projects/${p.id}`);
+    } catch (err) {
+      alert("Не удалось создать проект");
+    }
+
   };
 
   return (
@@ -79,7 +97,7 @@ export default function DashboardPage() {
           <DialogTrigger asChild>
             <Button className="gap-2"><Plus className="w-4 h-4" /> Новый проект</Button>
           </DialogTrigger>
-          <DialogContent>
+                    <DialogContent>
             <DialogHeader><DialogTitle className="font-display">Создать проект</DialogTitle></DialogHeader>
             <div className="space-y-4 mt-2">
               <div className="space-y-2">
@@ -102,7 +120,14 @@ export default function DashboardPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <Button onClick={handleCreate} className="w-full">Создать</Button>
+              <Button onClick={handleCreate} disabled={isCreatingProject? true : false} className="w-full">
+                {isCreatingProject && (
+                  <LoaderCircle className="w-3.5 h-3.5 animate-spin" />
+                )}
+                Создать
+              </Button>
+              <hr />
+              <Button className="w-full" disabled><Cross className="w-4 h-4 text-muted-foreground"/>Ассистент</Button>
             </div>
           </DialogContent>
         </Dialog>

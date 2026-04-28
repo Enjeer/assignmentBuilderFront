@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, Search, Trash2, FolderOpen, Cross} from "lucide-react";
+import { Plus, Search, Trash2, FolderOpen, Cross, LoaderCircle} from "lucide-react";
 
 const STATUS_CONFIG: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive" }> = {
   active: { label: "Активный", variant: "outline" },
@@ -31,6 +31,7 @@ export default function ProjectsPage() {
   const [newName, setNewName] = useState("");
   const [newDesc, setNewDesc] = useState("");
   const [newType, setNewType] = useState<Project["type"]>("course");
+  const [isCreatingProject, setIsCreatingProject] = useState(false);
 
   const filtered = projects.filter(p => {
     const statusMatch = !FILTER_MAP[filter] || p.status === FILTER_MAP[filter];
@@ -52,6 +53,8 @@ export default function ProjectsPage() {
   const handleCreate = async () => {
     if (!newName.trim()) return;
     
+    setIsCreatingProject(true);
+
     try {
       const p = await createProject({ 
         name: newName, 
@@ -64,10 +67,12 @@ export default function ProjectsPage() {
       setNewName(""); 
       setNewDesc("");
       
+      setIsCreatingProject(false);
       navigate(`/projects/${p.id}`);
     } catch (err) {
       alert("Не удалось создать проект");
     }
+
   };
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto space-y-6 animate-fade-in">
@@ -100,7 +105,12 @@ export default function ProjectsPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <Button onClick={handleCreate} className="w-full">Создать</Button>
+              <Button onClick={handleCreate} disabled={isCreatingProject? true : false} className="w-full">
+                {isCreatingProject && (
+                  <LoaderCircle className="w-3.5 h-3.5 animate-spin" />
+                )}
+                Создать
+              </Button>
               <hr />
               <Button className="w-full" disabled><Cross className="w-4 h-4 text-muted-foreground"/>Ассистент</Button>
             </div>
