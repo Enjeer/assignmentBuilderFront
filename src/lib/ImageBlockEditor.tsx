@@ -10,10 +10,11 @@ interface ImageBlockEditorProps {
         caption?: string;
         file?: File;
     };
+    isSaved?: boolean;
     onChange: (content: any) => void;
 }
 
-export default function ImageBlockEditor({ content, onChange }: ImageBlockEditorProps) {
+export default function ImageBlockEditor({ content, onChange, isSaved }: ImageBlockEditorProps) {
     const { url, caption, file } = content;
     const fileInputRef = useRef<HTMLInputElement>(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -108,7 +109,7 @@ export default function ImageBlockEditor({ content, onChange }: ImageBlockEditor
                             <X className="w-4 h-4" />
                         </Button>
 
-                        {file && (
+                        {(file && !isSaved) && (
                             <div className="absolute bottom-2 left-2 pointer-events-none">
                                 <span className="text-[10px] font-bold uppercase tracking-widest bg-primary text-primary-foreground px-2 py-1 rounded shadow-sm">
                                     Ожидает сохранения...

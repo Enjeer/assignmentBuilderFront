@@ -113,6 +113,7 @@ export default function EditorPage() {
   const [addMenuOpen, setAddMenuOpen] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   const [isDirty, setIsDirty] = useState(false);
 
 
@@ -136,6 +137,7 @@ export default function EditorPage() {
   const saveBlocks = useCallback((newBlocks: Block[]) => {
     setBlocks(newBlocks);
     setIsDirty(true);
+    setIsSaved(false);
   }, [projectId, updateBlocks]);
 
   const addBlock = (type: Block["type"]) => {
@@ -216,6 +218,7 @@ export default function EditorPage() {
       });
     } finally {
       setIsSaving(false);
+      setIsSaved(true);
     }
   };
 
@@ -355,7 +358,7 @@ const handleDownload = async () => {
                         </span>
                       </div>
                       <div className="p-4">
-                        <BlockEditor block={titleBlock} onChange={content => updateBlock(titleBlock.id, content)} />
+                        <BlockEditor block={titleBlock} onChange={content => updateBlock(titleBlock.id, content)} isSaved={isSaved} />
                       </div>
                     </CardContent>
                   </Card>
@@ -379,6 +382,7 @@ const handleDownload = async () => {
                         onMove={(dir) => moveBlock(block.id, dir)} 
                         onRemove={() => removeBlock(block.id)}
                         onUpdate={(content) => updateBlock(block.id, content)}
+                        isSaved={isSaved}
                       />
                     ))}
                   </SortableContext>
@@ -430,9 +434,10 @@ interface SortableBlockCardProps {
   onMove: (dir: -1 | 1) => void;
   onRemove: () => void;
   onUpdate: (content: Record<string, any>) => void;
+  isSaved: boolean;
 }
 
-function SortableBlockCard({ block, index, totalCount, onMove, onRemove, onUpdate }: SortableBlockCardProps) {
+function SortableBlockCard({ block, index, totalCount, onMove, onRemove, onUpdate, isSaved }: SortableBlockCardProps) {
   const {
     attributes,
     listeners,
@@ -500,7 +505,7 @@ function SortableBlockCard({ block, index, totalCount, onMove, onRemove, onUpdat
             </button>
           </div>
           <div className="p-4">
-            <BlockEditor block={block} onChange={onUpdate} />
+            <BlockEditor block={block} onChange={onUpdate} isSaved={isSaved} />
           </div>
         </CardContent>
       </Card>
@@ -510,7 +515,7 @@ function SortableBlockCard({ block, index, totalCount, onMove, onRemove, onUpdat
 
 /* ---- Block Editor ---- */
 
-function BlockEditor({ block, onChange }: { block: Block; onChange: (c: Record<string, any>) => void }) {
+function BlockEditor({ block, onChange, isSaved }: { block: Block; onChange: (c: Record<string, any>) => void, isSaved: boolean}) {
   switch (block.type) {
     case "heading":
       return (
@@ -615,6 +620,7 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (c: Record<s
     case "image":
       return (
         <ImageBlockEditor 
+          isSaved={isSaved}
           content={block.content} 
           onChange={onChange} 
         />
