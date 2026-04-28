@@ -94,10 +94,12 @@ export default function ImageBlockEditor({ content, onChange, isSaved }: ImageBl
                         />
 
                         {/* Overlay */}
-                        <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                            <RefreshCw className="w-8 h-8 text-white mb-2" />
-                            <span className="text-white text-xs font-medium">Нажмите или перетащите, чтобы заменить</span>
-                        </div>
+                        {!isSaved && (
+                            <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <RefreshCw className="w-8 h-8 text-white mb-2" />
+                                <span className="text-white text-xs font-medium">Нажмите или перетащите, чтобы заменить</span>
+                            </div>
+                        )}
 
                         {/* Delete button */}
                         <Button
