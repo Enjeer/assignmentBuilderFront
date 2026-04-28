@@ -89,27 +89,27 @@ export default function ImageBlockEditor({ content, onChange, isSaved }: ImageBl
                             alt="Preview"
                             className={cn(
                                 "w-full max-h-[300px] object-contain rounded-md transition-all",
-                                file && "opacity-60 grayscale-[0.5]"
+                                (file && !isSaved) && "opacity-60 grayscale-[0.5]"
                             )}
                         />
 
                         {/* Overlay */}
-                        {!isSaved && (
-                            <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                <RefreshCw className="w-8 h-8 text-white mb-2" />
-                                <span className="text-white text-xs font-medium">Нажмите или перетащите, чтобы заменить</span>
-                            </div>
-                        )}
+                        <div className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <RefreshCw className="w-8 h-8 text-white mb-2" />
+                            <span className="text-white text-xs font-medium">Нажмите или перетащите, чтобы заменить</span>
+                        </div>
 
                         {/* Delete button */}
-                        <Button
-                            variant="destructive"
-                            size="icon"
-                            className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                            onClick={removeImage}
-                        >
-                            <X className="w-4 h-4" />
-                        </Button>
+                        {!isSaved && (
+                            <Button
+                                variant="destructive"
+                                size="icon"
+                                className="absolute top-2 right-2 h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                                onClick={removeImage}
+                            >
+                                <X className="w-4 h-4" />
+                            </Button>
+                        )}
 
                         {(file && !isSaved) && (
                             <div className="absolute bottom-2 left-2 pointer-events-none">
