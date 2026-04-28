@@ -153,13 +153,15 @@ export default function EditorPage() {
     saveBlocks(blocks.map(b => b.id === id ? { ...b, content } : b));
   };
 
-  const moveBlock = (idx: number, dir: -1 | 1) => {
-    const block = blocks[idx];
-    if (block.type === "title-page") return;
-    const newIdx = idx + dir;
+  const moveBlock = (blockId: string, dir: -1 | 1) => {
+    const currentIndex = blocks.findIndex(b => b.id === blockId);
+    const newIdx = currentIndex + dir;
+
+    if (currentIndex === -1 || blocks[currentIndex].type === "title-page") return;
     if (newIdx < 1 || newIdx >= blocks.length) return;
+
     const newBlocks = [...blocks];
-    [newBlocks[idx], newBlocks[newIdx]] = [newBlocks[newIdx], newBlocks[idx]];
+    [newBlocks[currentIndex], newBlocks[newIdx]] = [newBlocks[newIdx], newBlocks[currentIndex]];
     saveBlocks(newBlocks);
   };
 
@@ -374,7 +376,7 @@ const handleDownload = async () => {
                         block={block}
                         index={idx}
                         totalCount={enrichedBlocks.length}
-                        onMove={(dir) => moveBlock(blocks.indexOf(block), dir)}
+                        onMove={(dir) => moveBlock(block.id, dir)} 
                         onRemove={() => removeBlock(block.id)}
                         onUpdate={(content) => updateBlock(block.id, content)}
                       />
