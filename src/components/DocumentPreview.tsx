@@ -184,6 +184,7 @@ export default function DocumentPreview({ blocks, projectType }: DocumentPreview
 
   const titleBlock = blocks.find(b => b.type === "title-page");
   const allImages = blocks.filter(b => b.type === "image");
+  const allTables = blocks.filter(b => b.type === "table");
 
   return (
     <div className="h-full flex flex-col bg-muted/30 relative overflow-hidden" ref={containerRef}>
@@ -217,7 +218,7 @@ export default function DocumentPreview({ blocks, projectType }: DocumentPreview
             <>
               {titleBlock && (
                 <div className={PAGE_STYLE} style={FONT_STYLE}>
-                  <PreviewBlock block={titleBlock} imgNum={0} projectType={projectType}/>
+                  <PreviewBlock block={titleBlock} imgNum={0} tabNum={0} projectType={projectType}/>
                 </div>
               )}
 
@@ -243,6 +244,7 @@ export default function DocumentPreview({ blocks, projectType }: DocumentPreview
                         key={`${pageIdx}-${bIdx}`} 
                         block={block} 
                         imgNum={block.type === "image" ? allImages.findIndex(img => img.id === block.id) + 1 : 0}
+                        tabNum={block.type === "table" ? allTables.findIndex(tab => tab.id === block.id) + 1 : 0}
                         projectType={projectType} 
                       />
                     ))}
@@ -262,7 +264,7 @@ function PageNumber({ num }: { num: number }) {
   return <span className="absolute bottom-[10mm] left-0 right-0 text-center text-[11pt]">{num}</span>;
 }
 
-function PreviewBlock({ block, imgNum, projectType}: { block: Block; imgNum: number, projectType: string }) {
+function PreviewBlock({ block, imgNum, tabNum, projectType}: { block: Block; imgNum: number, tabNum: number, projectType: string }) {
 
   const jobTitleSplit = (title) => {
     return title.split(",");
@@ -395,7 +397,7 @@ function PreviewBlock({ block, imgNum, projectType}: { block: Block; imgNum: num
                   ))}
                 </tbody>
               </table>
-                <figcaption className="text-[11pt] italic mt-2">{block.content["source"]}</figcaption>
+                <figcaption className="text-[11pt] italic mt-2">Таблица {tabNum} - {block.content["source"]}</figcaption>
             </figure>
           ): (
             <table className="w-full border-collapse border border-black table-fixed text-[11pt]">
