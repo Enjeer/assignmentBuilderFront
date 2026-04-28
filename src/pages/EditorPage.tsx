@@ -624,6 +624,24 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (c: Record<s
       const data: string[] = block.content.data || Array(rows * cols).fill("");
       return (
         <div className="space-y-3">
+          <div key="naming" className="grid grid-cols-[140px_1fr] items-center gap-2">
+              <label className="text-xs text-muted-foreground font-medium">Подпись к таблице</label>
+              <Input
+                value={block.content["naming"] || ""}
+                onChange={e => onChange({ ...block.content, "table": e.target.value })}
+                className="h-8 text-sm"
+                placeholder="Название таблицы"
+              />
+          </div>
+          <div key="source" className="grid grid-cols-[140px_1fr] items-center gap-2">
+              <label className="text-xs text-muted-foreground font-medium">Подпись к таблице</label>
+              <Input
+                value={block.content["source"] || "Примечание - Источник:"}
+                onChange={e => onChange({ ...block.content, "table": e.target.value })}
+                className="h-8 text-sm"
+                placeholder="Н.п. Примечание - Источник: собственная разработка"
+              />
+          </div>
           <div className="flex gap-3 items-center">
             <label className="text-xs text-muted-foreground">Строки</label>
             <Input type="number" min={1} max={20} value={rows}
@@ -670,15 +688,6 @@ function BlockEditor({ block, onChange }: { block: Block; onChange: (c: Record<s
               </tbody>
             </table>
           </div>
-          <div key="table" className="grid grid-cols-[140px_1fr] items-center gap-2">
-              <label className="text-xs text-muted-foreground font-medium">Подпись к таблице</label>
-              <Input
-                value={block.content["table"] || ""}
-                onChange={e => onChange({ ...block.content, "table": e.target.value })}
-                className="h-8 text-sm"
-                placeholder="Табл 1. Источник: собственная разработка"
-              />
-            </div>
         </div>
       );
     }

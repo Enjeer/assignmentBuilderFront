@@ -381,20 +381,21 @@ function PreviewBlock({ block, imgNum, projectType}: { block: Block; imgNum: num
         <div className="my-4">
           {block.content ? (
             <figure className="inline-block">
-            <table className="w-full border-collapse border border-black table-fixed text-[11pt]">
-              <tbody>
-                {Array.from({ length: rows }).map((_, r) => (
-                  <tr key={r}>
-                    {Array.from({ length: cols }).map((_, c) => (
-                      <td key={c} className="border border-black px-2 py-1 break-words overflow-hidden">
-                        {data[r * cols + c] || ""}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-              <figcaption className="text-[11pt] italic mt-2">Таблица "номер" — {block.content["table"]}</figcaption>
+                <figcaption className="text-[11pt] italic mt-2">{block.content["naming"]}</figcaption>
+              <table className="w-full border-collapse border border-black table-fixed text-[11pt]">
+                <tbody>
+                  {Array.from({ length: rows }).map((_, r) => (
+                    <tr key={r}>
+                      {Array.from({ length: cols }).map((_, c) => (
+                        <td key={c} className="border border-black px-2 py-1 break-words overflow-hidden">
+                          {data[r * cols + c] || ""}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+                <figcaption className="text-[11pt] italic mt-2">{block.content["source"]}</figcaption>
             </figure>
           ): (
             <table className="w-full border-collapse border border-black table-fixed text-[11pt]">
