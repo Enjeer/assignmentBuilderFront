@@ -380,10 +380,10 @@ function PreviewBlock({ block, imgNum, tabNum, projectType}: { block: Block; img
     case "table": {
       const { rows = 1, cols = 1, data = [] } = block.content;
       return (
-        <div className="my-4 text-center">
+        <div className="my-4">
           {block.content ? (
             <figure className="inline-block">
-                <figcaption className="text-[11pt] italic mt-2">Таблица {tabNum} - {block.content["naming"]}</figcaption>
+                <figcaption className="text-[11pt] italic mt-2 ">Таблица {tabNum} - {block.content["naming"]}</figcaption>
               <table className="w-full border-collapse border border-black table-fixed text-[11pt]">
                 <tbody>
                   {Array.from({ length: rows }).map((_, r) => (
@@ -397,7 +397,7 @@ function PreviewBlock({ block, imgNum, tabNum, projectType}: { block: Block; img
                   ))}
                 </tbody>
               </table>
-                <figcaption className="text-[11pt] italic mt-2">{block.content["source"]}</figcaption>
+                <figcaption className="text-[11pt] italic mt-2  text-center">{block.content["source"]}</figcaption>
             </figure>
           ): (
             <table className="w-full border-collapse border border-black table-fixed text-[11pt]">
