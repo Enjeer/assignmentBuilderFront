@@ -333,7 +333,7 @@ const handleDownload = async () => {
           )}
           Сохранить
         </Button>
-        <Button variant="outline" onClick={handleDownload} size="sm" className="gap-2">
+        <Button variant="outline" disabled={isDownloading? true : false} onClick={handleDownload} size="sm" className="gap-2">
           {!isDownloading ? (
             <Download className="w-3.5 h-3.5" />
           ) : (
@@ -475,8 +475,8 @@ function SortableBlockCard({ block, index, totalCount, onMove, onRemove, onUpdat
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="relative">
-      <Card className="group border-border hover:border-primary/20 transition-colors overflow-hidden">
+    <div ref={setNodeRef} style={style} className="relative overflow-hidden">
+      <Card className="group border-border hover:border-primary/20 transition-colors">
         <CardContent className="p-0">
           <div className={cn(
               "flex items-center gap-1 px-3 py-2 border-b border-border transition-colors",
