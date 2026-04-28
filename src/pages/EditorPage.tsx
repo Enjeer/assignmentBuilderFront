@@ -476,7 +476,7 @@ function SortableBlockCard({ block, index, totalCount, onMove, onRemove, onUpdat
 
   return (
     <div ref={setNodeRef} style={style} className="relative overflow-hidden">
-      <Card className="group border-border hover:border-primary/20 transition-colors">
+      <Card className="group border-border hover:border-primary/20 transition-colors overflow-hidden">
         <CardContent className="p-0">
           <div className={cn(
               "flex items-center gap-1 px-3 py-2 border-b border-border transition-colors",
