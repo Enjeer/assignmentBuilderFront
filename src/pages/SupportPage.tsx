@@ -70,16 +70,20 @@ export default function SupportPage() {
         // alert("Не удалось создать проект");
         // }
     };
+
+    const newTicket = () =>{
+        window.open('https://forms.clickup.com/90121612778/f/2kxunbfa-612/MB7T1KYME3OPWKZ9IW');
+    }
     
     return (
         <div className="p-6 lg:p-8 max-w-6xl mx-auto space-y-6 animate-fade-in">
         <div className="flex items-center justify-between">
             <h1 className="text-2xl font-display font-bold text-foreground">Поддержка</h1>
-            <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
-            <DialogTrigger asChild>
-                <Button className="gap-2"><Plus className="w-4 h-4" aria-disabled/> Оставить заявку</Button>
-            </DialogTrigger>
-            {/* <DialogContent>
+            {/* <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
+            <DialogTrigger asChild> */}
+                <Button className="gap-2" onClick={newTicket}><Plus className="w-4 h-4"/> Оставить заявку</Button>
+            {/* </DialogTrigger>
+            <DialogContent>
                 <DialogHeader><DialogTitle className="font-display">Новая заявка</DialogTitle></DialogHeader>
                 <div className="space-y-4 mt-2">
                 <div className="space-y-2">
@@ -92,8 +96,8 @@ export default function SupportPage() {
                 </div>
                 <Button onClick={handleCreate} className="w-full">Создать</Button>
                 </div>
-            </DialogContent> */}
-            </Dialog>
+            </DialogContent>
+            </Dialog> */}
         </div>
 
         {/* Search & Filters */}

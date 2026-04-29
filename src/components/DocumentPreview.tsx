@@ -272,10 +272,10 @@ function PreviewBlock({ block, imgNum, tabNum, projectType}: { block: Block; img
 
 
   const types = {
-    "course" : 'Курсовая работа',
-    "essay" : 'Эссе',
-    "lab" : 'Лабораторная работа',
-    "diplom" : 'Дипломная работа',
+    "course" : 'КУРСОВАЯ РАБОТА',
+    "essay" : 'ЭССЕ',
+    "lab" : 'ЛАБОРАТОРНАЯ РАБОТА',
+    "diplom" : 'ДИПЛОМНАЯ РАБОТА',
   }
 
   switch (block.type) {

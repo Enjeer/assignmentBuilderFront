@@ -72,7 +72,7 @@ export default function AuthPage() {
             <form onSubmit={handleSubmit} className="space-y-4">
               {isSignUp && (
                 <div className="space-y-2">
-                  <Label htmlFor="name">Логин</Label>
+                  <Label htmlFor="name">Имя пользователя</Label>
                   <Input id="name" value={name} onChange={e => setName(e.target.value)} placeholder="Ваш логин" required />
                 </div>
               )}
