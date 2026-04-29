@@ -488,7 +488,7 @@ function SortableBlockCard({ block, index, totalCount, onMove, onRemove, onUpdat
             <button {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing p-0.5 text-muted-foreground/50 hover:text-muted-foreground">
               <GripVertical className="w-3.5 h-3.5" />
             </button>
-            <span className="text-xs text-muted font-medium uppercase tracking-wider flex-1">
+            <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider flex-1">
               {label}
             </span>
             <button onClick={() => onMove(-1)} disabled={index === 0}
