@@ -128,7 +128,7 @@ export default function SupportPage() {
             {/* <p className="text-lg font-medium">Заяки не найдены</p>
             <p className="text-sm">Отсавьте заяку или измените фильтры</p> */}
             <p className="text-lg font-medium">Раздел в разработке</p>
-            <p className="text-sm">В скором времени он станет доступен</p>
+            <p className="text-sm">Но вы можете <a className="hover:text-primary" target="_blank" href="https://forms.clickup.com/90121612778/f/2kxunbfa-612/MB7T1KYME3OPWKZ9IW">оставить заявку</a></p>
             <p className="text-sm">Почта для контакта: <a className="hover:text-primary" href="mailto:aor.tech.2026@gmail.com">aor.tech.2026@gmail.com</a></p>
             </div>
         ) : (
