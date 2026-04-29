@@ -14,6 +14,7 @@ import SupportPage from "./pages/SupportPage";
 import NotFound from "@/pages/NotFound";
 import { Analytics } from "@vercel/analytics/react"
 import { SpeedInsights } from "@vercel/speed-insights/react"
+import { ThemeProvider } from "./lib/themeProvider";
 
 const queryClient = new QueryClient();
 
@@ -41,18 +42,20 @@ function AppRoutes() {
 }
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <AuthProvider>
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </AuthProvider>
-    </TooltipProvider>
-    <Analytics />
-    <SpeedInsights />
-  </QueryClientProvider>
+  <ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <Toaster />
+        <AuthProvider>
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </AuthProvider>
+      </TooltipProvider>
+      <Analytics />
+      <SpeedInsights />
+    </QueryClientProvider>
+  </ThemeProvider>
 );
 
 export default App;

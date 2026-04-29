@@ -5,7 +5,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 import Icon from '@/assets/img/NoBase-logo-white.svg';
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { Switch } from "./ui/switch";
+import { useTheme } from "@/lib/themeProvider";
 
 const navItems = [
   { label: "Дашборд", icon: LayoutDashboard, path: "/" },
@@ -18,6 +20,7 @@ export default function AppSidebar() {
   const [logoutOpen, setLogoutOpen] = useState<boolean>(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { theme, toggleTheme } = useTheme();
 
   return (
     <aside className="w-80 h-screen flex flex-col bg-sidebar border-r border-sidebar-border shrink-0">
@@ -58,6 +61,17 @@ export default function AppSidebar() {
 
       {/* User */}
       <div className="p-3 border-t border-sidebar-border">
+        {/* Theme switch */}
+        <div className="flex items-center gap-3 px-3 py-2">
+          <Switch 
+            checked={theme === "dark"} 
+            onCheckedChange={toggleTheme} 
+            className="bg-sidebar-accent"
+          />
+          <span className="text-sm text-sidebar-foreground">
+            {theme === "dark" ? "Темная тема" : "Светлая тема"}
+          </span>
+        </div>
         <div className="flex items-center gap-3 px-3 py-2">
           <div className="w-8 h-8 rounded-full bg-sidebar-accent flex items-center justify-center">
             <User className="w-4 h-4 text-sidebar-foreground" />
