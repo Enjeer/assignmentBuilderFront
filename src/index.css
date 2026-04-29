@@ -136,8 +136,8 @@
   .editor-shadow {
     box-shadow: var(--shadow-lg);
   }
+}
 
   .cky-btn-revisit-wrapper{
     display: none !important;
   }
-}
